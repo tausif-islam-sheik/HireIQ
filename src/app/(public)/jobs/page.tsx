@@ -1,0 +1,214 @@
+"use client";
+
+import { useState, useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/axios";
+import { JobCard } from "@/components/shared/JobCard";
+import { SkeletonCard } from "@/components/shared/SkeletonCard";
+import { SearchBar } from "@/components/shared/SearchBar";
+import { FilterPanel } from "@/components/shared/FilterPanel";
+import { Pagination } from "@/components/shared/Pagination";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { SlidersHorizontal, Grid3X3, List } from "lucide-react";
+import { Job, JobFilterParams, ApiResponse, PaginationInfo } from "@/types";
+
+const jobTypes = [
+  { value: "FULL_TIME", label: "Full Time" },
+  { value: "PART_TIME", label: "Part Time" },
+  { value: "CONTRACT", label: "Contract" },
+  { value: "REMOTE", label: "Remote" },
+  { value: "INTERNSHIP", label: "Internship" },
+];
+
+const experienceLevels = [
+  { value: "entry", label: "Entry Level" },
+  { value: "mid", label: "Mid Level" },
+  { value: "senior", label: "Senior Level" },
+  { value: "lead", label: "Lead/Manager" },
+];
+
+const categories = [
+  { value: "Engineering", label: "Engineering" },
+  { value: "Design", label: "Design" },
+  { value: "Marketing", label: "Marketing" },
+  { value: "Sales", label: "Sales" },
+  { value: "Data Science", label: "Data Science" },
+  { value: "Product", label: "Product" },
+  { value: "Finance", label: "Finance" },
+  { value: "HR", label: "HR" },
+];
+
+const locations = [
+  { value: "Remote", label: "Remote" },
+  { value: "New York", label: "New York" },
+  { value: "San Francisco", label: "San Francisco" },
+  { value: "London", label: "London" },
+  { value: "Berlin", label: "Berlin" },
+];
+
+const sortOptions = [
+  { value: "newest", label: "Newest First" },
+  { value: "salary_high", label: "Salary: High to Low" },
+  { value: "salary_low", label: "Salary: Low to High" },
+];
+
+export default function JobsPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState("newest");
+  const [activeFilters, setActiveFilters] = useState<Record<string, string>>({
+    type: "all",
+    category: "all",
+    location: "all",
+    experience: "all",
+  });
+
+  const filters = [
+    { key: "category", label: "Category", options: categories },
+    { key: "type", label: "Job Type", options: jobTypes },
+    { key: "location", label: "Location", options: locations },
+    { key: "experience", label: "Experience", options: experienceLevels },
+  ];
+
+  const fetchJobs = async () => {
+    const params: JobFilterParams = {
+      page: currentPage,
+      limit: 12,
+      search: searchQuery || undefined,
+      sortBy,
+      category: activeFilters.category !== "all" ? activeFilters.category : undefined,
+      type: activeFilters.type !== "all" ? activeFilters.type : undefined,
+      location: activeFilters.location !== "all" ? activeFilters.location : undefined,
+      experience: activeFilters.experience !== "all" ? activeFilters.experience : undefined,
+    };
+
+    const response = await api.get<ApiResponse<{ jobs: Job[]; pagination: PaginationInfo }>>("/jobs", { params });
+    return response.data.data;
+  };
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["jobs", currentPage, searchQuery, sortBy, activeFilters],
+    queryFn: fetchJobs,
+  });
+
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+  }, []);
+
+  const handleFilterChange = (key: string, value: string) => {
+    setActiveFilters((prev) => ({ ...prev, [key]: value }));
+    setCurrentPage(1);
+  };
+
+  const handleClearFilters = () => {
+    setActiveFilters({
+      type: "all",
+      category: "all",
+      location: "all",
+      experience: "all",
+    });
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  return (
+    <div className="min-h-screen bg-muted/30">
+      {/* Header */}
+      <div className="bg-background border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <h1 className="text-3xl font-bold mb-2">Find Your Dream Job</h1>
+          <p className="text-muted-foreground">
+            Discover {data?.pagination?.total || 0}+ opportunities from top companies
+          </p>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Search and Filters */}
+        <div className="space-y-4 mb-6">
+          <div className="flex flex-col md:flex-row gap-4">
+            <SearchBar
+              onSearch={handleSearch}
+              placeholder="Search by job title, company, or keywords"
+              className="flex-1"
+            />
+            <div className="flex gap-2">
+              <Select value={sortBy} onValueChange={(value: string) => setSortBy(value)}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sortOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button variant="outline" size="icon">
+                <Grid3X3 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          <FilterPanel
+            filters={filters}
+            activeFilters={activeFilters}
+            onFilterChange={handleFilterChange}
+            onClearFilters={handleClearFilters}
+          />
+        </div>
+
+        {/* Results */}
+        {error ? (
+          <div className="text-center py-12">
+            <p className="text-destructive">Failed to load jobs. Please try again.</p>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {isLoading
+                ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
+                : data?.jobs?.map((job) => <JobCard key={job.id} job={job} />)}
+            </div>
+
+            {!isLoading && data?.jobs?.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground mb-4">No jobs found matching your criteria</p>
+                <Button onClick={handleClearFilters}>Clear Filters</Button>
+              </div>
+            )}
+
+            {!isLoading && data?.pagination && data.pagination.totalPages > 1 && (
+              <div className="mt-8">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={data.pagination.totalPages}
+                  onPageChange={handlePageChange}
+                />
+              </div>
+            )}
+
+            {!isLoading && data?.pagination && (
+              <div className="mt-4 text-center text-sm text-muted-foreground">
+                Showing {(currentPage - 1) * 12 + 1} - {Math.min(currentPage * 12, data.pagination.total)} of {data.pagination.total} jobs
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
