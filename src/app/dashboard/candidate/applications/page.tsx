@@ -39,13 +39,18 @@ import {
 export default function CandidateApplicationsPage() {
   const queryClient = useQueryClient();
 
-  const { data: applications, isLoading } = useQuery({
+  const { data: applicationsData, isLoading } = useQuery({
     queryKey: ["my-applications"],
     queryFn: async () => {
       const response = await api.get("/applications/my");
-      return response.data.data as Application[];
+      // Handle both direct array or nested object response
+      const data = response.data.data;
+      return (data.applications || data || []) as Application[];
     },
   });
+
+  // Ensure applications is always an array
+  const applications = Array.isArray(applicationsData) ? applicationsData : [];
 
   const withdrawMutation = useMutation({
     mutationFn: async (applicationId: string) => {

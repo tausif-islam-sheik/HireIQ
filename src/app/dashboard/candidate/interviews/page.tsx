@@ -26,15 +26,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function CandidateInterviewsPage() {
   const [selectedApplication, setSelectedApplication] = useState<string | null>(null);
 
-  const { data: applications, isLoading } = useQuery({
+  const { data: applicationsData, isLoading } = useQuery({
     queryKey: ["my-applications-for-interview"],
     queryFn: async () => {
       const response = await api.get("/applications/my");
-      return response.data.data as Application[];
+      // Handle both direct array or nested object response
+      const data = response.data.data;
+      return (data.applications || data || []) as Application[];
     },
   });
 
-  const selectedJob = applications?.find(
+  // Ensure applications is always an array
+  const applications = Array.isArray(applicationsData) ? applicationsData : [];
+
+  const selectedJob = applications.find(
     (app) => app.id === selectedApplication
   );
 

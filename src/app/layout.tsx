@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: "HireIQ - AI-Powered Smart Recruitment Platform",
@@ -19,9 +17,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-background">
         <Providers>
-          <Navbar />
-          <main className="pt-16">{children}</main>
-          <Footer />
+          {children}
         </Providers>
       </body>
     </html>

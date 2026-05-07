@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { cn, getInitials } from "@/lib/utils";
 import {
@@ -12,10 +13,15 @@ import {
   FileText,
   MessageSquare,
   Bell,
-  Settings,
   User,
   LogOut,
+  Menu,
+  X,
+  ChevronDown,
+  Sun,
+  Moon,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -27,6 +33,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { NotificationBell } from "@/components/shared/NotificationBell";
 
 const getNavItems = (role: string) => {
   const baseItems = [
@@ -40,13 +48,17 @@ const getNavItems = (role: string) => {
     { href: "/dashboard/admin/users", label: "Users", icon: Users },
     { href: "/dashboard/admin/jobs", label: "All Jobs", icon: Briefcase },
     { href: "/dashboard/admin/companies", label: "Companies", icon: Building2 },
+    { href: "/dashboard/admin/analytics", label: "Analytics", icon: LayoutDashboard },
+    { href: "/dashboard/admin/profile", label: "Profile", icon: User },
   ];
 
   const recruiterItems = [
     { href: "/dashboard/recruiter", label: "Overview", icon: LayoutDashboard },
     { href: "/dashboard/recruiter/jobs", label: "My Jobs", icon: Briefcase },
     { href: "/dashboard/recruiter/applications", label: "Applications", icon: FileText },
+    { href: "/dashboard/recruiter/pipeline", label: "Pipeline", icon: LayoutDashboard },
     { href: "/dashboard/recruiter/company", label: "Company", icon: Building2 },
+    { href: "/dashboard/recruiter/profile", label: "Profile", icon: User },
   ];
 
   const candidateItems = [
@@ -55,15 +67,16 @@ const getNavItems = (role: string) => {
     { href: "/dashboard/candidate/applications", label: "My Applications", icon: FileText },
     { href: "/dashboard/candidate/resume", label: "Resume", icon: FileText },
     { href: "/dashboard/candidate/interviews", label: "Interviews", icon: MessageSquare },
+    { href: "/dashboard/candidate/profile", label: "Profile", icon: User },
   ];
 
   switch (role) {
     case "ADMIN":
-      return [...adminItems, ...baseItems.slice(1)];
+      return [...adminItems, { href: "/dashboard/notifications", label: "Notifications", icon: Bell }];
     case "RECRUITER":
-      return [...recruiterItems, ...baseItems.slice(1)];
+      return [...recruiterItems, { href: "/dashboard/notifications", label: "Notifications", icon: Bell }];
     case "CANDIDATE":
-      return [...candidateItems, ...baseItems.slice(1)];
+      return [...candidateItems, { href: "/dashboard/notifications", label: "Notifications", icon: Bell }];
     default:
       return baseItems;
   }
@@ -75,7 +88,50 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { user, logout } = useAuthStore();
+  const router = useRouter();
+  const { user, logout, isAuthenticated, isLoading } = useAuthStore();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration mismatch
+  useState(() => setMounted(true));
+
+  // Check authentication and RBAC
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+
+    // Role-based access control
+    if (user?.role) {
+      const rolePath = pathname.split("/")[2]; // /dashboard/[role]/...
+      
+      // Map roles to their allowed path segments
+      const rolePaths: Record<string, string[]> = {
+        ADMIN: ["admin", "notifications", "profile"],
+        RECRUITER: ["recruiter", "notifications", "profile"],
+        CANDIDATE: ["candidate", "notifications", "profile"],
+      };
+
+      const allowedPaths = rolePaths[user.role] || [];
+      
+      // Check if current path is allowed for this role
+      if (rolePath && !allowedPaths.includes(rolePath)) {
+        // Redirect to their default dashboard
+        router.push(`/dashboard/${user.role.toLowerCase()}`);
+      }
+    }
+  }, [isAuthenticated, isLoading, user, pathname, router]);
+
+  // Show loading while checking auth
+  if (isLoading || !isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+      </div>
+    );
+  }
 
   const navItems = getNavItems(user?.role || "CANDIDATE");
 
@@ -137,15 +193,18 @@ export default function DashboardLayout({
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/profile" className="cursor-pointer">
+                  <Link 
+                    href={user?.role === "ADMIN" ? "/dashboard/admin/profile" : user?.role === "RECRUITER" ? "/dashboard/recruiter/profile" : "/dashboard/candidate/profile"} 
+                    className="cursor-pointer"
+                  >
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/settings" className="cursor-pointer">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
+                  <Link href="/dashboard/notifications" className="cursor-pointer">
+                    <Bell className="mr-2 h-4 w-4" />
+                    Notifications
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -159,12 +218,126 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      {/* Mobile Header */}
-      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 lg:hidden">
-        <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-          <Briefcase className="h-6 w-6 text-primary" />
-          <span>HireIQ</span>
-        </Link>
+      {/* Top Navbar */}
+      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 lg:ml-64">
+        {/* Mobile Menu Button */}
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="lg:hidden">
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64 p-0">
+            <div className="flex h-full flex-col">
+              {/* Logo */}
+              <div className="flex h-16 items-center border-b px-6">
+                <Link href="/" className="flex items-center gap-2 font-bold text-xl">
+                  <Briefcase className="h-6 w-6 text-primary" />
+                  <span>HireIQ</span>
+                </Link>
+              </div>
+              {/* Mobile Navigation */}
+              <ScrollArea className="flex-1 py-4">
+                <nav className="px-4 space-y-1">
+                  {navItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                          "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                          isActive
+                            ? "bg-primary text-primary-foreground"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        )}
+                      >
+                        <Icon className="h-4 w-4" />
+                        {item.label}
+                      </Link>
+                    );
+                  })}
+                </nav>
+              </ScrollArea>
+              {/* Mobile User Section */}
+              <div className="border-t p-4">
+                <Button variant="ghost" className="w-full justify-start gap-3 h-auto p-2" onClick={logout}>
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback>{getInitials(user?.name || "U")}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 text-left">
+                    <p className="text-sm font-medium">{user?.name || "User"}</p>
+                    <p className="text-xs text-muted-foreground capitalize">{user?.role?.toLowerCase()}</p>
+                  </div>
+                </Button>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
+
+        {/* Breadcrumb / Page Title */}
+        <div className="flex-1">
+          <h1 className="text-lg font-semibold lg:hidden">HireIQ</h1>
+        </div>
+
+        {/* Right Side Actions */}
+        <div className="flex items-center gap-2">
+          <NotificationBell />
+          
+          {/* Theme Toggle */}
+          {mounted && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            >
+              {theme === "dark" ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+              <span className="sr-only">Toggle theme</span>
+            </Button>
+          )}
+          
+          {/* User Dropdown for Desktop */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={user?.profilePicture || ""} />
+                  <AvatarFallback>{getInitials(user?.name || "U")}</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link 
+                  href={user?.role === "ADMIN" ? "/dashboard/admin/profile" : user?.role === "RECRUITER" ? "/dashboard/recruiter/profile" : "/dashboard/candidate/profile"} 
+                  className="cursor-pointer"
+                >
+                  <User className="mr-2 h-4 w-4" />
+                  Profile
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/dashboard/notifications" className="cursor-pointer">
+                  <Bell className="mr-2 h-4 w-4" />
+                  Notifications
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={logout} className="cursor-pointer text-destructive">
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </header>
 
       {/* Main Content */}
