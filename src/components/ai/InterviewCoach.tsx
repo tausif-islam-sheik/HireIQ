@@ -98,14 +98,16 @@ export function InterviewCoach({ jobTitle, applicationId }: InterviewCoachProps)
   };
 
   return (
-    <Card className="h-[600px] flex flex-col">
-      <CardHeader className="border-b pb-4">
-        <CardTitle className="text-lg flex items-center justify-between">
+    <Card className="h-[600px] flex flex-col bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
+      <CardHeader className="border-b border-slate-200 dark:border-slate-800 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-950/30 dark:to-purple-950/30 pb-4">
+        <CardTitle className="text-lg flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-indigo-600" />
-            Interview Practice
+            <div className="p-1.5 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/25">
+              <Sparkles className="h-4 w-4 text-white" />
+            </div>
+            <span className="font-semibold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">Interview Practice</span>
           </div>
-          <Badge variant="secondary">{jobTitle}</Badge>
+          <Badge variant="secondary" className="w-fit truncate max-w-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-slate-200 dark:border-slate-700 font-medium">{jobTitle}</Badge>
         </CardTitle>
       </CardHeader>
 
@@ -118,42 +120,44 @@ export function InterviewCoach({ jobTitle, applicationId }: InterviewCoachProps)
                 message.role === "user" ? "flex-row-reverse" : ""
               }`}
             >
-              <Avatar className="h-8 w-8">
+              <Avatar className="h-8 w-8 ring-2 ring-white dark:ring-slate-800 shadow-md">
                 {message.role === "user" ? (
-                  <AvatarFallback className="bg-indigo-600 text-white">
+                  <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
                     <User className="h-4 w-4" />
                   </AvatarFallback>
                 ) : (
-                  <AvatarFallback className="bg-indigo-100 text-indigo-600">
+                  <AvatarFallback className="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 text-indigo-600 dark:text-indigo-400">
                     <Bot className="h-4 w-4" />
                   </AvatarFallback>
                 )}
               </Avatar>
               <div
-                className={`max-w-[80%] space-y-2 ${
+                className={`max-w-[85%] sm:max-w-[80%] space-y-2 ${
                   message.role === "user" ? "items-end" : ""
                 }`}
               >
                 <div
-                  className={`rounded-lg p-3 ${
+                  className={`rounded-2xl p-4 shadow-lg ${
                     message.role === "user"
-                      ? "bg-indigo-600 text-white"
-                      : "bg-muted"
+                      ? "bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-indigo-500/25"
+                      : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-slate-200/50 dark:shadow-slate-900/50"
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
                 </div>
 
                 {message.feedback && message.score !== undefined && (
-                  <Card className="border-indigo-200 dark:border-indigo-800">
-                    <CardContent className="p-3">
+                  <Card className="border-amber-200 dark:border-amber-800/50 bg-gradient-to-br from-amber-50/80 to-yellow-50/80 dark:from-amber-950/30 dark:to-yellow-950/30 shadow-lg shadow-amber-500/10">
+                    <CardContent className="p-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <Star className="h-4 w-4 text-yellow-500" />
-                        <span className="font-medium text-sm">
+                        <div className="p-1 rounded-full bg-amber-100 dark:bg-amber-900/50">
+                          <Star className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                        </div>
+                        <span className="font-semibold text-sm text-amber-900 dark:text-amber-100">
                           Score: {message.score}/10
                         </span>
                       </div>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-amber-800/80 dark:text-amber-200/80 leading-relaxed">
                         {message.feedback}
                       </p>
                     </CardContent>
@@ -164,39 +168,46 @@ export function InterviewCoach({ jobTitle, applicationId }: InterviewCoachProps)
           ))}
           {isLoading && (
             <div className="flex gap-3">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-indigo-100 text-indigo-600">
+              <Avatar className="h-8 w-8 ring-2 ring-white dark:ring-slate-800 shadow-md">
+                <AvatarFallback className="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 text-indigo-600 dark:text-indigo-400">
                   <Bot className="h-4 w-4" />
                 </AvatarFallback>
               </Avatar>
-              <div className="bg-muted rounded-lg p-3">
-                <Loader2 className="h-4 w-4 animate-spin" />
+              <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-lg border border-slate-200 dark:border-slate-700">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <div className="w-2 h-2 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <div className="w-2 h-2 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
               </div>
             </div>
           )}
         </div>
       </ScrollArea>
 
-      <div className="p-4 border-t">
-        <div className="flex gap-2">
-          <Textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type your response..."
-            className="min-h-[60px] resize-none"
-            disabled={isLoading}
-          />
+      <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-gradient-to-b from-slate-50/50 to-white dark:from-slate-900/50 dark:to-slate-900">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex-1 relative">
+            <Textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type your response..."
+              className="min-h-[60px] resize-none pr-12 rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-inner focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+              disabled={isLoading}
+            />
+          </div>
           <Button
             onClick={handleSend}
             disabled={!input.trim() || isLoading}
-            className="bg-indigo-600 hover:bg-indigo-700"
+            className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all w-full sm:w-auto shrink-0 rounded-xl h-[60px] px-6"
           >
-            <Send className="h-4 w-4" />
+            <Send className="h-4 w-4 mr-2" />
+            Send
           </Button>
         </div>
-        <p className="text-xs text-muted-foreground mt-2">
-          Press Enter to send, Shift+Enter for new line
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 text-center sm:text-left">
+          Press <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-xs">Enter</kbd> to send, <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-xs">Shift+Enter</kbd> for new line
         </p>
       </div>
     </Card>

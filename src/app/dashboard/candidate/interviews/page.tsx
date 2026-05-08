@@ -30,13 +30,11 @@ export default function CandidateInterviewsPage() {
     queryKey: ["my-applications-for-interview"],
     queryFn: async () => {
       const response = await api.get("/applications/my");
-      // Handle both direct array or nested object response
       const data = response.data.data;
       return (data.applications || data || []) as Application[];
     },
   });
 
-  // Ensure applications is always an array
   const applications = Array.isArray(applicationsData) ? applicationsData : [];
 
   const selectedJob = applications.find(
@@ -54,11 +52,13 @@ export default function CandidateInterviewsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">AI Interview Coach</h1>
-        <p className="text-muted-foreground">
-          Practice interviews with AI and get real-time feedback
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold">AI Interview Coach</h1>
+          <p className="text-muted-foreground">
+            Practice interviews with AI and get real-time feedback
+          </p>
+        </div>
       </div>
 
       {!selectedApplication ? (
@@ -82,23 +82,28 @@ export default function CandidateInterviewsPage() {
                       className="cursor-pointer hover:border-indigo-500 transition-colors"
                       onClick={() => setSelectedApplication(application.id)}
                     >
-                      <CardContent className="p-4">
+                      <CardContent className="p-4 space-y-3">
                         <div className="flex items-start gap-3">
-                          <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-950">
+                          <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-950 flex-shrink-0">
                             <Briefcase className="h-5 w-5 text-indigo-600" />
                           </div>
-                          <div className="flex-1 min-w-0">
+                          <div className="min-w-0 flex-1">
                             <p className="font-medium truncate">
                               {application.job.title}
                             </p>
-                            <p className="text-sm text-muted-foreground flex items-center gap-1">
-                              <Building2 className="h-3 w-3" />
+                            <p className="text-sm text-muted-foreground truncate flex items-center gap-1">
+                              <Building2 className="h-3 w-3 flex-shrink-0" />
                               {application.job.company.name}
                             </p>
                           </div>
                         </div>
-                        <Button className="w-full mt-4" variant="outline">
-                          <Play className="h-4 w-4 mr-2" />
+                        <Button
+                          onClick={() => setSelectedApplication(application.id)}
+                          disabled={!application}
+                          className="gap-2 w-full"
+                          size="sm"
+                        >
+                          <Play className="h-4 w-4" />
                           Start Practice
                         </Button>
                       </CardContent>
@@ -130,23 +135,25 @@ export default function CandidateInterviewsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-4">
-                <Select>
-                  <SelectTrigger className="w-[280px]">
-                    <SelectValue placeholder="Select job category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="software-engineer">Software Engineer</SelectItem>
-                    <SelectItem value="product-manager">Product Manager</SelectItem>
-                    <SelectItem value="data-scientist">Data Scientist</SelectItem>
-                    <SelectItem value="designer">Designer</SelectItem>
-                    <SelectItem value="marketing">Marketing</SelectItem>
-                    <SelectItem value="sales">Sales</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                <div className="w-full sm:w-[280px]">
+                  <Select>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select job category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="software-engineer">Software Engineer</SelectItem>
+                      <SelectItem value="product-manager">Product Manager</SelectItem>
+                      <SelectItem value="data-scientist">Data Scientist</SelectItem>
+                      <SelectItem value="designer">Designer</SelectItem>
+                      <SelectItem value="marketing">Marketing</SelectItem>
+                      <SelectItem value="sales">Sales</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <Button
                   onClick={() => setSelectedApplication("general")}
-                  className="bg-indigo-600 hover:bg-indigo-700"
+                  className="bg-indigo-600 hover:bg-indigo-700 w-full sm:w-auto"
                 >
                   <Play className="h-4 w-4 mr-2" />
                   Start General Practice
@@ -157,7 +164,7 @@ export default function CandidateInterviewsPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h2 className="text-lg font-semibold">
                 Interview Practice: {selectedJob?.job.title || "General Practice"}
@@ -166,7 +173,7 @@ export default function CandidateInterviewsPage() {
                 {selectedJob?.job.company.name || "Multiple industries"}
               </p>
             </div>
-            <Button variant="outline" onClick={() => setSelectedApplication(null)}>
+            <Button variant="outline" onClick={() => setSelectedApplication(null)} className="w-full sm:w-auto">
               End Session
             </Button>
           </div>
