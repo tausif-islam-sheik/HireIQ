@@ -31,7 +31,7 @@ export default function CandidateResumePage() {
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData();
-      formData.append("resume", file);
+      formData.append("file", file);
       const response = await api.post("/resumes/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -42,25 +42,49 @@ export default function CandidateResumePage() {
       queryClient.invalidateQueries({ queryKey: ["my-resume"] });
       setIsUploading(false);
     },
-    onError: () => {
-      toast.error("Failed to upload resume");
+    onError: (error: any) => {
+      console.error("Resume upload error:", error);
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || "Failed to upload resume";
+      toast.error(errorMessage);
       setIsUploading(false);
     },
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("File size must be less than 5MB");
-        return;
-      }
-      if (!["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"].includes(file.type)) {
-        toast.error("Only PDF and Word documents are supported");
-        return;
-      }
+    if (!file) return;
+    
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size must be less than 5MB");
+      e.target.value = "";
+      return;
+    }
+    
+    const validTypes = [
+      "application/pdf",
+      "application/msword", 
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+    const validExtensions = [".pdf", ".doc", ".docx"];
+    const fileExtension = file.name.toLowerCase().slice(file.name.lastIndexOf("."));
+    
+    const isValidType = validTypes.includes(file.type);
+    const isValidExtension = validExtensions.includes(fileExtension);
+    
+    if (!isValidType && !isValidExtension) {
+      toast.error(`Invalid file type. Only PDF and Word documents are allowed.`);
+      e.target.value = "";
+      return;
+    }
+    
+    try {
       setIsUploading(true);
-      uploadMutation.mutate(file);
+      await uploadMutation.mutateAsync(file);
+    } catch (err) {
+      console.error("Upload failed:", err);
+    } finally {
+      setIsUploading(false);
+      e.target.value = "";
     }
   };
 
@@ -100,15 +124,21 @@ export default function CandidateResumePage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {!resume ? (
-              <div
-                onClick={handleUploadClick}
-                className="border-2 border-dashed border-muted rounded-lg p-8 text-center cursor-pointer hover:border-indigo-500 transition-colors"
-              >
+              <div className="border-2 border-dashed border-muted rounded-lg p-8 text-center">
                 <Upload className="h-10 w-10 text-muted-foreground mx-auto mb-4" />
-                <p className="font-medium mb-1">Click to upload your resume</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="font-medium mb-1">Upload your resume</p>
+                <p className="text-sm text-muted-foreground mb-4">
                   PDF or Word up to 5MB
                 </p>
+                <Button
+                  type="button"
+                  onClick={handleUploadClick}
+                  variant="outline"
+                  className="hover:border-indigo-500 hover:text-indigo-500"
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Choose File
+                </Button>
               </div>
             ) : (
               <div className="space-y-4">
@@ -130,6 +160,7 @@ export default function CandidateResumePage() {
                   </Button>
                 </div>
                 <Button
+                  type="button"
                   variant="outline"
                   onClick={handleUploadClick}
                   disabled={isUploading}
