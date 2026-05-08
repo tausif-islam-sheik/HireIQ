@@ -39,7 +39,7 @@ export function FilterPanel({
   );
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3">
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <Filter className="h-4 w-4" />
         <span>Filters:</span>
@@ -51,7 +51,7 @@ export function FilterPanel({
           value={activeFilters[filter.key] || "all"}
           onValueChange={(value: string) => onFilterChange(filter.key, value)}
         >
-          <SelectTrigger className="w-[140px] h-9">
+          <SelectTrigger className="w-full sm:w-[140px] h-9">
             <SelectValue placeholder={filter.label} />
           </SelectTrigger>
           <SelectContent>

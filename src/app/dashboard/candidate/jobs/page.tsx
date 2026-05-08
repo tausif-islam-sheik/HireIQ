@@ -39,6 +39,18 @@ const categories = [
   { value: "HR", label: "HR" },
 ];
 
+const salaryRanges = [
+  { value: "$80,000", label: "$80k - $100k / year" },
+  { value: "$100,000", label: "$100k - $130k / year" },
+  { value: "$110,000", label: "$110k - $140k / year" },
+  { value: "$120,000", label: "$120k - $150k / year" },
+  { value: "$125,000", label: "$125k - $155k / year" },
+  { value: "$130,000", label: "$130k - $160k / year" },
+  { value: "$140,000", label: "$140k - $175k / year" },
+  { value: "$150,000", label: "$150k - $190k / year" },
+  { value: "$160,000", label: "$160k - $200k / year" },
+];
+
 const sortOptions = [
   { value: "newest", label: "Newest First" },
   { value: "salary_high", label: "Salary: High to Low" },
@@ -52,11 +64,13 @@ export default function CandidateJobsPage() {
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>({
     type: "all",
     category: "all",
+    salary: "all",
   });
 
   const filters = [
     { key: "category", label: "Category", options: categories },
     { key: "type", label: "Job Type", options: jobTypes },
+    { key: "salary", label: "Salary Range", options: salaryRanges },
   ];
 
   const fetchJobs = async () => {
@@ -67,6 +81,7 @@ export default function CandidateJobsPage() {
       sortBy,
       category: activeFilters.category !== "all" ? activeFilters.category : undefined,
       type: activeFilters.type !== "all" ? activeFilters.type : undefined,
+      salary: activeFilters.salary !== "all" ? activeFilters.salary : undefined,
     };
 
     const response = await api.get<ApiResponse<{ jobs: Job[]; pagination: PaginationInfo }>>("/jobs", { params });
@@ -92,6 +107,7 @@ export default function CandidateJobsPage() {
     setActiveFilters({
       type: "all",
       category: "all",
+      salary: "all",
     });
     setCurrentPage(1);
   };
@@ -103,14 +119,14 @@ export default function CandidateJobsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Find Jobs</h1>
           <p className="text-muted-foreground">
             Discover opportunities that match your skills and interests
           </p>
         </div>
-        <Button variant="outline" asChild>
+        <Button variant="outline" asChild className="w-full sm:w-auto">
           <a href="/dashboard/candidate/applications">
             <Bookmark className="mr-2 h-4 w-4" />
             My Applications
@@ -126,9 +142,9 @@ export default function CandidateJobsPage() {
             placeholder="Search by job title, company, or keywords"
             className="flex-1"
           />
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full sm:w-auto">
             <Select value={sortBy} onValueChange={(value: string) => setSortBy(value)}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>

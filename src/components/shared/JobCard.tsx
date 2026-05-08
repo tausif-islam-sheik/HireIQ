@@ -73,7 +73,9 @@ export function JobCard({ job }: JobCardProps) {
           {job.salary && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <DollarSign className="w-4 h-4 flex-shrink-0" />
-              <span className="truncate">{job.salary}</span>
+              <span className="truncate">
+                {job.salary.includes("/hour") || job.salary.includes("/hour") ? job.salary : `${job.salary} / year`}
+              </span>
             </div>
           )}
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
