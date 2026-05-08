@@ -1,8 +1,10 @@
+export type UserRole = "CANDIDATE" | "RECRUITER" | "ADMIN";
+
 export interface User {
   id: string;
   name: string;
   email: string;
-  role: "CANDIDATE" | "RECRUITER" | "ADMIN";
+  role: UserRole;
   avatar: string | null;
   isVerified: boolean;
   createdAt?: string;

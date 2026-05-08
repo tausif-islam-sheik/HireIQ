@@ -25,7 +25,6 @@ import { Application, ApplicationStatus } from "@/types";
 import { formatDate, getStatusColor } from "@/lib/utils";
 import { Briefcase, Building2, Calendar, Eye, Trash2, FileText } from "lucide-react";
 import Link from "next/link";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useState } from "react";
 import {
