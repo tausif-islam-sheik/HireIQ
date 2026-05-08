@@ -2,8 +2,9 @@
 
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
+import { ApplicationsChart } from "@/components/charts/ApplicationsChart";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
-import { FileText, Heart, Calendar, CheckCircle2, Briefcase, MessageSquare } from "lucide-react";
+import { FileText, Heart, Calendar, CheckCircle2, Briefcase } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -93,29 +94,13 @@ export default function CandidateDashboardPage() {
         </Button>
       </div>
 
-      {/* Interview Tips & Recent Activity */}
+      {/* Charts & Activity */}
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* AI Interview Coach Card */}
-        <div className="rounded-lg border bg-card text-card-foreground">
-          <div className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-full bg-primary/10">
-                <MessageSquare className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold">AI Interview Coach</h3>
-                <p className="text-sm text-muted-foreground">
-                  Practice with AI-powered mock interviews
-                </p>
-              </div>
-            </div>
-            <Button className="w-full mt-4" variant="outline" asChild>
-              <Link href="/dashboard/candidate/interviews">Start Practice</Link>
-            </Button>
-          </div>
-        </div>
-
-        {/* Application Status */}
+        {isLoading ? (
+          <Skeleton className="h-80" />
+        ) : (
+          <ApplicationsChart data={stats?.applicationsByDate || []} />
+        )}
         {isLoading ? (
           <Skeleton className="h-96" />
         ) : (

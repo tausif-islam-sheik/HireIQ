@@ -57,7 +57,7 @@ export default function AdminUsersPage() {
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { data: users, isLoading } = useQuery({
+  const { data: usersData, isLoading } = useQuery({
     queryKey: ["admin-users", searchQuery, roleFilter],
     queryFn: async () => {
       const params: { search?: string; role?: string } = {};
@@ -65,9 +65,14 @@ export default function AdminUsersPage() {
       if (roleFilter !== "all") params.role = roleFilter;
       
       const response = await api.get("/admin/users", { params });
-      return response.data.data.users as UserData[];
+      // Handle both direct array or nested object response
+      const data = response.data.data;
+      return (data.users || data || []) as UserData[];
     },
   });
+
+  // Ensure users is always an array
+  const users = Array.isArray(usersData) ? usersData : [];
 
   const toggleStatusMutation = useMutation({
     mutationFn: async ({ userId, isActive }: { userId: string; isActive: boolean }) => {

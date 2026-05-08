@@ -66,7 +66,7 @@ export default function AdminJobsPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { data: jobs, isLoading } = useQuery({
+  const { data: jobsData, isLoading } = useQuery({
     queryKey: ["admin-jobs", searchQuery, statusFilter],
     queryFn: async () => {
       const params: { search?: string; isActive?: boolean } = {};
@@ -75,9 +75,14 @@ export default function AdminJobsPage() {
       if (statusFilter === "inactive") params.isActive = false;
       
       const response = await api.get("/admin/jobs", { params });
-      return response.data.data.jobs as JobData[];
+      // Handle both direct array or nested object response
+      const data = response.data.data;
+      return (data.jobs || data || []) as JobData[];
     },
   });
+
+  // Ensure jobs is always an array
+  const jobs = Array.isArray(jobsData) ? jobsData : [];
 
   const deleteMutation = useMutation({
     mutationFn: async (jobId: string) => {

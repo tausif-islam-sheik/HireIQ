@@ -3,9 +3,11 @@
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
-import { Users, Briefcase, FileText, Building2 } from "lucide-react";
+import { Users, Briefcase, FileText, Building2, LayoutDashboard, BarChart3 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function AdminDashboardPage() {
   const { data: stats, isLoading, error } = useDashboardStats();
@@ -64,20 +66,40 @@ export default function AdminDashboardPage() {
         )}
       </div>
 
-      {/* Recent Activity */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {isLoading ? (
-          <>
-            <Skeleton className="h-96" />
-            <Skeleton className="h-96" />
-          </>
-        ) : (
-          <>
-            <RecentActivity applications={stats?.recentApplications || []} />
-            <RecentActivity applications={stats?.recentApplications || []} title="Top Performing Jobs" />
-          </>
-        )}
+      {/* Quick Actions */}
+      <div className="grid gap-4 md:grid-cols-4">
+        <Button variant="outline" className="h-24 flex flex-col items-center justify-center gap-2" asChild>
+          <Link href="/dashboard/admin/users">
+            <Users className="h-6 w-6" />
+            <span>Manage Users</span>
+          </Link>
+        </Button>
+        <Button variant="outline" className="h-24 flex flex-col items-center justify-center gap-2" asChild>
+          <Link href="/dashboard/admin/jobs">
+            <Briefcase className="h-6 w-6" />
+            <span>Manage Jobs</span>
+          </Link>
+        </Button>
+        <Button variant="outline" className="h-24 flex flex-col items-center justify-center gap-2" asChild>
+          <Link href="/dashboard/admin/companies">
+            <Building2 className="h-6 w-6" />
+            <span>Manage Companies</span>
+          </Link>
+        </Button>
+        <Button variant="outline" className="h-24 flex flex-col items-center justify-center gap-2" asChild>
+          <Link href="/dashboard/admin/analytics">
+            <BarChart3 className="h-6 w-6" />
+            <span>View Analytics</span>
+          </Link>
+        </Button>
       </div>
+
+      {/* Recent Activity */}
+      {isLoading ? (
+        <Skeleton className="h-96" />
+      ) : (
+        <RecentActivity applications={stats?.recentApplications || []} />
+      )}
     </div>
   );
 }

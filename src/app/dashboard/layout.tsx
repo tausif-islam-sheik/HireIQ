@@ -36,38 +36,45 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { NotificationBell } from "@/components/shared/NotificationBell";
 
-const getNavItems = (role: string) => {
-  const baseItems = [
-    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/dashboard/profile", label: "Profile", icon: User },
-    { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
+interface NavItem {
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  exact?: boolean;
+}
+
+const getNavItems = (role: string): NavItem[] => {
+  const baseItems: NavItem[] = [
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
+    { href: "/dashboard/profile", label: "Profile", icon: User, exact: true },
+    { href: "/dashboard/notifications", label: "Notifications", icon: Bell, exact: true },
   ];
 
-  const adminItems = [
-    { href: "/dashboard/admin", label: "Overview", icon: LayoutDashboard },
+  const adminItems: NavItem[] = [
+    { href: "/dashboard/admin", label: "Overview", icon: LayoutDashboard, exact: true },
     { href: "/dashboard/admin/users", label: "Users", icon: Users },
     { href: "/dashboard/admin/jobs", label: "All Jobs", icon: Briefcase },
     { href: "/dashboard/admin/companies", label: "Companies", icon: Building2 },
     { href: "/dashboard/admin/analytics", label: "Analytics", icon: LayoutDashboard },
-    { href: "/dashboard/admin/profile", label: "Profile", icon: User },
+    { href: "/dashboard/admin/profile", label: "Profile", icon: User, exact: true },
   ];
 
-  const recruiterItems = [
-    { href: "/dashboard/recruiter", label: "Overview", icon: LayoutDashboard },
+  const recruiterItems: NavItem[] = [
+    { href: "/dashboard/recruiter", label: "Overview", icon: LayoutDashboard, exact: true },
     { href: "/dashboard/recruiter/jobs", label: "My Jobs", icon: Briefcase },
     { href: "/dashboard/recruiter/applications", label: "Applications", icon: FileText },
     { href: "/dashboard/recruiter/pipeline", label: "Pipeline", icon: LayoutDashboard },
     { href: "/dashboard/recruiter/company", label: "Company", icon: Building2 },
-    { href: "/dashboard/recruiter/profile", label: "Profile", icon: User },
+    { href: "/dashboard/recruiter/profile", label: "Profile", icon: User, exact: true },
   ];
 
-  const candidateItems = [
-    { href: "/dashboard/candidate", label: "Overview", icon: LayoutDashboard },
+  const candidateItems: NavItem[] = [
+    { href: "/dashboard/candidate", label: "Overview", icon: LayoutDashboard, exact: true },
     { href: "/dashboard/candidate/jobs", label: "Find Jobs", icon: Briefcase },
     { href: "/dashboard/candidate/applications", label: "My Applications", icon: FileText },
     { href: "/dashboard/candidate/resume", label: "Resume", icon: FileText },
     { href: "/dashboard/candidate/interviews", label: "Interviews", icon: MessageSquare },
-    { href: "/dashboard/candidate/profile", label: "Profile", icon: User },
+    { href: "/dashboard/candidate/profile", label: "Profile", icon: User, exact: true },
   ];
 
   switch (role) {
@@ -153,7 +160,9 @@ export default function DashboardLayout({
             <nav className="px-4 space-y-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                const isActive = item.exact
+                  ? pathname === item.href
+                  : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
                 return (
                   <Link
@@ -242,7 +251,9 @@ export default function DashboardLayout({
                 <nav className="px-4 space-y-1">
                   {navItems.map((item) => {
                     const Icon = item.icon;
-                    const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                    const isActive = item.exact
+                  ? pathname === item.href
+                  : pathname === item.href || pathname.startsWith(`${item.href}/`);
                     return (
                       <Link
                         key={item.href}

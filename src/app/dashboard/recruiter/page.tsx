@@ -2,6 +2,7 @@
 
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
+import { ApplicationsChart } from "@/components/charts/ApplicationsChart";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { Briefcase, FileText, Eye, UserCheck } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -93,8 +94,15 @@ export default function RecruiterDashboardPage() {
         </Button>
       </div>
 
-      {/* Recent Activity */}
-      <RecentActivity applications={stats?.recentApplications || []} title="Recent Applications" />
+      {/* Charts & Activity */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {isLoading ? (
+          <Skeleton className="h-80" />
+        ) : (
+          <ApplicationsChart data={stats?.applicationsByDate || []} />
+        )}
+        <RecentActivity applications={stats?.recentApplications || []} title="Recent Applications" />
+      </div>
     </div>
   );
 }

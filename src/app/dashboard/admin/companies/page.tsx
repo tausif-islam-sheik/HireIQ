@@ -47,14 +47,19 @@ export default function AdminCompaniesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { data: companies, isLoading } = useQuery({
+  const { data: companiesData, isLoading } = useQuery({
     queryKey: ["admin-companies", searchQuery],
     queryFn: async () => {
       const params = searchQuery ? { search: searchQuery } : {};
       const response = await api.get("/admin/companies", { params });
-      return response.data.data.companies as CompanyData[];
+      // Handle both direct array or nested object response
+      const data = response.data.data;
+      return (data.companies || data || []) as CompanyData[];
     },
   });
+
+  // Ensure companies is always an array
+  const companies = Array.isArray(companiesData) ? companiesData : [];
 
   const verifyMutation = useMutation({
     mutationFn: async ({ companyId, isVerified }: { companyId: string; isVerified: boolean }) => {
