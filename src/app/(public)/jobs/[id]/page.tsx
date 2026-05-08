@@ -76,7 +76,7 @@ export default function JobDetailsPage() {
     enabled: isAuthenticated && user?.role === "CANDIDATE",
   });
 
-  const hasApplied = myApplications?.some((app) => app.jobId === jobId);
+  const hasApplied = Array.isArray(myApplications) && myApplications.some((app) => app.jobId === jobId);
 
   const applyMutation = useMutation({
     mutationFn: async () => {

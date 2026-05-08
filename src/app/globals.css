@@ -68,3 +68,12 @@
     text-wrap: balance;
   }
 }
+
+@layer components {
+  .glass-button {
+    @apply backdrop-blur-md bg-white/5 border-white/10;
+  }
+  .glass-button-hover {
+    @apply hover:bg-[hsl(239_84%_67%_/_0.2)] hover:border-[hsl(239_84%_67%_/_0.3)] hover:text-[hsl(239_84%_90%)];
+  }
+}

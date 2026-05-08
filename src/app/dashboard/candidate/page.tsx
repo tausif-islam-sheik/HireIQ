@@ -74,21 +74,33 @@ export default function CandidateDashboardPage() {
 
       {/* Quick Actions */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Button variant="outline" className="h-24 flex flex-col items-center justify-center gap-2" asChild>
+        <Button
+          variant="outline"
+          className="h-24 flex flex-col items-center justify-center gap-2 glass-button glass-button-hover transition-all duration-300 group"
+          asChild
+        >
           <Link href="/dashboard/candidate/jobs">
-            <Briefcase className="h-6 w-6" />
+            <Briefcase className="h-6 w-6 group-hover:scale-110 transition-transform duration-300" />
             <span>Browse Jobs</span>
           </Link>
         </Button>
-        <Button variant="outline" className="h-24 flex flex-col items-center justify-center gap-2" asChild>
+        <Button
+          variant="outline"
+          className="h-24 flex flex-col items-center justify-center gap-2 glass-button glass-button-hover transition-all duration-300 group"
+          asChild
+        >
           <Link href="/dashboard/candidate/applications">
-            <FileText className="h-6 w-6" />
+            <FileText className="h-6 w-6 group-hover:scale-110 transition-transform duration-300" />
             <span>My Applications</span>
           </Link>
         </Button>
-        <Button variant="outline" className="h-24 flex flex-col items-center justify-center gap-2" asChild>
+        <Button
+          variant="outline"
+          className="h-24 flex flex-col items-center justify-center gap-2 glass-button glass-button-hover transition-all duration-300 group"
+          asChild
+        >
           <Link href="/dashboard/candidate/resume">
-            <Calendar className="h-6 w-6" />
+            <Calendar className="h-6 w-6 group-hover:scale-110 transition-transform duration-300" />
             <span>Update Resume</span>
           </Link>
         </Button>
