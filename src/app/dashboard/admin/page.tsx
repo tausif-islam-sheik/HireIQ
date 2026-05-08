@@ -67,29 +67,29 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Button variant="outline" className="h-24 flex flex-col items-center justify-center gap-2" asChild>
+      <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-2 md:grid-cols-4">
+        <Button variant="outline" className="h-20 sm:h-24 flex flex-col items-center justify-center gap-2" asChild>
           <Link href="/dashboard/admin/users">
-            <Users className="h-6 w-6" />
-            <span>Manage Users</span>
+            <Users className="h-5 w-5 sm:h-6 sm:w-6" />
+            <span className="text-xs sm:text-sm">Manage Users</span>
           </Link>
         </Button>
-        <Button variant="outline" className="h-24 flex flex-col items-center justify-center gap-2" asChild>
+        <Button variant="outline" className="h-20 sm:h-24 flex flex-col items-center justify-center gap-2" asChild>
           <Link href="/dashboard/admin/jobs">
-            <Briefcase className="h-6 w-6" />
-            <span>Manage Jobs</span>
+            <Briefcase className="h-5 w-5 sm:h-6 sm:w-6" />
+            <span className="text-xs sm:text-sm">Manage Jobs</span>
           </Link>
         </Button>
-        <Button variant="outline" className="h-24 flex flex-col items-center justify-center gap-2" asChild>
+        <Button variant="outline" className="h-20 sm:h-24 flex flex-col items-center justify-center gap-2" asChild>
           <Link href="/dashboard/admin/companies">
-            <Building2 className="h-6 w-6" />
-            <span>Manage Companies</span>
+            <Building2 className="h-5 w-5 sm:h-6 sm:w-6" />
+            <span className="text-xs sm:text-sm">Manage Companies</span>
           </Link>
         </Button>
-        <Button variant="outline" className="h-24 flex flex-col items-center justify-center gap-2" asChild>
+        <Button variant="outline" className="h-20 sm:h-24 flex flex-col items-center justify-center gap-2" asChild>
           <Link href="/dashboard/admin/analytics">
-            <BarChart3 className="h-6 w-6" />
-            <span>View Analytics</span>
+            <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6" />
+            <span className="text-xs sm:text-sm">View Analytics</span>
           </Link>
         </Button>
       </div>

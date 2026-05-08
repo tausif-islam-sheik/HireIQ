@@ -23,12 +23,12 @@ export default function CandidateDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">My Dashboard</h1>
           <p className="text-muted-foreground">Track your job applications and interviews</p>
         </div>
-        <Button asChild>
+        <Button asChild className="w-full sm:w-auto">
           <Link href="/dashboard/candidate/jobs">Find Jobs</Link>
         </Button>
       </div>
@@ -73,41 +73,41 @@ export default function CandidateDashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
         <Button
           variant="outline"
-          className="h-24 flex flex-col items-center justify-center gap-2 glass-button glass-button-hover transition-all duration-300 group"
+          className="h-20 sm:h-24 flex flex-col items-center justify-center gap-2 glass-button glass-button-hover transition-all duration-300 group"
           asChild
         >
           <Link href="/dashboard/candidate/jobs">
-            <Briefcase className="h-6 w-6 group-hover:scale-110 transition-transform duration-300" />
-            <span>Browse Jobs</span>
+            <Briefcase className="h-5 w-5 sm:h-6 sm:w-6 group-hover:scale-110 transition-transform duration-300" />
+            <span className="text-sm sm:text-base">Browse Jobs</span>
           </Link>
         </Button>
         <Button
           variant="outline"
-          className="h-24 flex flex-col items-center justify-center gap-2 glass-button glass-button-hover transition-all duration-300 group"
+          className="h-20 sm:h-24 flex flex-col items-center justify-center gap-2 glass-button glass-button-hover transition-all duration-300 group"
           asChild
         >
           <Link href="/dashboard/candidate/applications">
-            <FileText className="h-6 w-6 group-hover:scale-110 transition-transform duration-300" />
-            <span>My Applications</span>
+            <FileText className="h-5 w-5 sm:h-6 sm:w-6 group-hover:scale-110 transition-transform duration-300" />
+            <span className="text-sm sm:text-base">My Applications</span>
           </Link>
         </Button>
         <Button
           variant="outline"
-          className="h-24 flex flex-col items-center justify-center gap-2 glass-button glass-button-hover transition-all duration-300 group"
+          className="h-20 sm:h-24 flex flex-col items-center justify-center gap-2 glass-button glass-button-hover transition-all duration-300 group"
           asChild
         >
           <Link href="/dashboard/candidate/resume">
-            <Calendar className="h-6 w-6 group-hover:scale-110 transition-transform duration-300" />
-            <span>Update Resume</span>
+            <Calendar className="h-5 w-5 sm:h-6 sm:w-6 group-hover:scale-110 transition-transform duration-300" />
+            <span className="text-sm sm:text-base">Update Resume</span>
           </Link>
         </Button>
       </div>
 
       {/* Charts & Activity */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
         {isLoading ? (
           <Skeleton className="h-80" />
         ) : (

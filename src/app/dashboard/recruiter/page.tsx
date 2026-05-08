@@ -23,12 +23,12 @@ export default function RecruiterDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Recruiter Dashboard</h1>
           <p className="text-muted-foreground">Manage your jobs and applications</p>
         </div>
-        <Button asChild>
+        <Button asChild className="w-full sm:w-auto">
           <Link href="/dashboard/recruiter/jobs/new">Post New Job</Link>
         </Button>
       </div>
@@ -73,29 +73,29 @@ export default function RecruiterDashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Button variant="outline" className="h-24 flex flex-col items-center justify-center gap-2" asChild>
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
+        <Button variant="outline" className="h-20 sm:h-24 flex flex-col items-center justify-center gap-2" asChild>
           <Link href="/dashboard/recruiter/jobs">
-            <Briefcase className="h-6 w-6" />
-            <span>Manage Jobs</span>
+            <Briefcase className="h-5 w-5 sm:h-6 sm:w-6" />
+            <span className="text-sm sm:text-base">Manage Jobs</span>
           </Link>
         </Button>
-        <Button variant="outline" className="h-24 flex flex-col items-center justify-center gap-2" asChild>
+        <Button variant="outline" className="h-20 sm:h-24 flex flex-col items-center justify-center gap-2" asChild>
           <Link href="/dashboard/recruiter/applications">
-            <FileText className="h-6 w-6" />
-            <span>View Applications</span>
+            <FileText className="h-5 w-5 sm:h-6 sm:w-6" />
+            <span className="text-sm sm:text-base">View Applications</span>
           </Link>
         </Button>
-        <Button variant="outline" className="h-24 flex flex-col items-center justify-center gap-2" asChild>
+        <Button variant="outline" className="h-20 sm:h-24 flex flex-col items-center justify-center gap-2" asChild>
           <Link href="/dashboard/recruiter/company">
-            <Eye className="h-6 w-6" />
-            <span>Company Profile</span>
+            <Eye className="h-5 w-5 sm:h-6 sm:w-6" />
+            <span className="text-sm sm:text-base">Company Profile</span>
           </Link>
         </Button>
       </div>
 
       {/* Charts & Activity */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
         {isLoading ? (
           <Skeleton className="h-80" />
         ) : (
