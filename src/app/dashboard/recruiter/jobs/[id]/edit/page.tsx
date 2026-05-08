@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "@/lib/axios";
 import { Button } from "@/components/ui/button";
@@ -24,8 +24,8 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Loader2, Sparkles, Plus, X } from "lucide-react";
-import { JDGenerator } from "@/components/ai/JDGenerator";
+import { Loader2, Plus, X, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 const jobTypes = [
   { value: "FULL_TIME", label: "Full Time" },
@@ -53,26 +53,36 @@ const experienceLevels = [
   { value: "Lead/Manager", label: "Lead/Manager" },
 ];
 
-export default function CreateJobPage() {
+interface Job {
+  id: string;
+  title: string;
+  description: string;
+  requirements: string[];
+  skills: string[];
+  salary: string;
+  location: string;
+  type: string;
+  category: string;
+  experience: string;
+}
+
+export default function EditJobPage() {
   const router = useRouter();
-  const [showAIGenerator, setShowAIGenerator] = useState(false);
+  const params = useParams();
+  const jobId = params.id as string;
+  
   const [skillInput, setSkillInput] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Check if recruiter has a company
-  const { data: company, isLoading: isLoadingCompany } = useQuery({
-    queryKey: ["my-company"],
+  // Fetch job data
+  const { data: job, isLoading: isLoadingJob } = useQuery({
+    queryKey: ["job", jobId],
     queryFn: async () => {
-      const response = await api.get("/companies/my");
-      return response.data.data;
+      const response = await api.get(`/jobs/${jobId}`);
+      return response.data.data as Job;
     },
+    enabled: !!jobId,
   });
-
-  useEffect(() => {
-    if (!isLoadingCompany && !company) {
-      toast.error("Please create a company profile before posting jobs");
-      router.push("/dashboard/recruiter/company");
-    }
-  }, [company, isLoadingCompany, router]);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -86,26 +96,40 @@ export default function CreateJobPage() {
     experience: "",
   });
 
-  const createMutation = useMutation({
-    mutationFn: async (data: typeof formData) => {
-      const response = await api.post("/jobs", {
-        ...data,
-        companyId: company?.id,
+  // Pre-fill form when job data loads
+  useEffect(() => {
+    if (job) {
+      setFormData({
+        title: job.title || "",
+        description: job.description || "",
+        requirements: job.requirements || [],
+        skills: job.skills || [],
+        salary: job.salary || "",
+        location: job.location || "",
+        type: job.type || "FULL_TIME",
+        category: job.category || "",
+        experience: job.experience || "",
       });
+    }
+  }, [job]);
+
+  const updateMutation = useMutation({
+    mutationFn: async (data: typeof formData) => {
+      const response = await api.put(`/jobs/${jobId}`, data);
       return response.data;
     },
     onSuccess: () => {
-      toast.success("Job posted successfully!");
+      toast.success("Job updated successfully!");
       router.push("/dashboard/recruiter/jobs");
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to create job");
+      toast.error(error.response?.data?.message || "Failed to update job");
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createMutation.mutate(formData);
+    updateMutation.mutate(formData);
   };
 
   const handleAddSkill = () => {
@@ -132,26 +156,7 @@ export default function CreateJobPage() {
     }
   };
 
-  const handleApplyGeneratedJD = (generated: {
-    title: string;
-    summary: string;
-    responsibilities: string[];
-    requirements: string[];
-    niceToHave: string[];
-    benefits: string[];
-  }) => {
-    setFormData((prev) => ({
-      ...prev,
-      title: generated.title,
-      description: `${generated.summary}\n\nResponsibilities:\n${generated.responsibilities.map((r) => `- ${r}`).join("\n")}\n\nBenefits:\n${generated.benefits.map((b) => `- ${b}`).join("\n")}`,
-      requirements: generated.requirements,
-    }));
-    setShowAIGenerator(false);
-    toast.success("Job description generated and applied!");
-  };
-
-  // Show loading while checking company
-  if (isLoadingCompany) {
+  if (isLoadingJob) {
     return (
       <div className="space-y-6">
         <div className="h-8 w-48 bg-muted rounded animate-pulse" />
@@ -160,13 +165,12 @@ export default function CreateJobPage() {
     );
   }
 
-  // Don't show form if no company (will redirect)
-  if (!company) {
+  if (!job) {
     return (
       <div className="space-y-6">
         <div className="h-8 w-48 bg-muted rounded" />
         <div className="p-8 text-center">
-          <p className="text-muted-foreground">Redirecting to company setup...</p>
+          <p className="text-muted-foreground">Job not found</p>
         </div>
       </div>
     );
@@ -174,11 +178,18 @@ export default function CreateJobPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Post a New Job</h1>
-        <p className="text-muted-foreground">
-          Create a job posting to find the perfect candidates
-        </p>
+      <div className="flex items-center gap-4">
+        <Button variant="outline" size="icon" asChild>
+          <Link href="/dashboard/recruiter/jobs">
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
+        </Button>
+        <div>
+          <h1 className="text-2xl font-bold">Edit Job</h1>
+          <p className="text-muted-foreground">
+            Update your job posting details
+          </p>
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
@@ -187,7 +198,7 @@ export default function CreateJobPage() {
             <CardHeader>
               <CardTitle>Job Details</CardTitle>
               <CardDescription>
-                Fill in the details for your job posting
+                Update the details for your job posting
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -275,9 +286,9 @@ export default function CreateJobPage() {
                         <SelectValue placeholder="Select experience level" />
                       </SelectTrigger>
                       <SelectContent>
-                        {experienceLevels.map((exp) => (
-                          <SelectItem key={exp.value} value={exp.value}>
-                            {exp.label}
+                        {experienceLevels.map((level) => (
+                          <SelectItem key={level.value} value={level.value}>
+                            {level.label}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -287,7 +298,7 @@ export default function CreateJobPage() {
                     <Label htmlFor="salary">Salary Range (Optional)</Label>
                     <Input
                       id="salary"
-                      placeholder="e.g. $100k - $150k"
+                      placeholder="e.g. $80k - $120k"
                       value={formData.salary}
                       onChange={(e) =>
                         setFormData({ ...formData, salary: e.target.value })
@@ -300,12 +311,12 @@ export default function CreateJobPage() {
                   <Label htmlFor="description">Job Description</Label>
                   <Textarea
                     id="description"
-                    placeholder="Describe the role, responsibilities, and what you're looking for..."
-                    rows={8}
+                    placeholder="Describe the role, responsibilities, and requirements..."
                     value={formData.description}
                     onChange={(e) =>
                       setFormData({ ...formData, description: e.target.value })
                     }
+                    rows={6}
                     required
                   />
                 </div>
@@ -319,13 +330,22 @@ export default function CreateJobPage() {
                       onChange={(e) => setSkillInput(e.target.value)}
                       onKeyDown={handleKeyDown}
                     />
-                    <Button type="button" onClick={handleAddSkill}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={handleAddSkill}
+                    >
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {formData.skills.map((skill) => (
-                      <Badge key={skill} variant="secondary">
+                      <Badge
+                        key={skill}
+                        variant="secondary"
+                        className="gap-1"
+                      >
                         {skill}
                         <button
                           type="button"
@@ -343,57 +363,22 @@ export default function CreateJobPage() {
                   <Button
                     type="submit"
                     className="bg-indigo-600 hover:bg-indigo-700"
-                    disabled={createMutation.isPending}
+                    disabled={updateMutation.isPending}
                   >
-                    {createMutation.isPending ? (
+                    {updateMutation.isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Posting...
+                        Saving...
                       </>
                     ) : (
-                      "Post Job"
+                      "Save Changes"
                     )}
                   </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => router.push("/dashboard/recruiter/jobs")}
-                  >
-                    Cancel
+                  <Button variant="outline" asChild>
+                    <Link href="/dashboard/recruiter/jobs">Cancel</Link>
                   </Button>
                 </div>
               </form>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-indigo-600" />
-                AI Job Description
-              </CardTitle>
-              <CardDescription>
-                Use AI to generate a professional job description
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {showAIGenerator ? (
-                <JDGenerator
-                  onApply={handleApplyGeneratedJD}
-                  onClose={() => setShowAIGenerator(false)}
-                />
-              ) : (
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => setShowAIGenerator(true)}
-                >
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Generate with AI
-                </Button>
-              )}
             </CardContent>
           </Card>
         </div>

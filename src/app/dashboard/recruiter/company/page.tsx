@@ -15,10 +15,10 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Building2, Globe, Users, MapPin, Upload, Loader2, Building, Plus } from "lucide-react";
+import { Building2, Globe, Users, MapPin, Upload, Loader2, Building, Plus, AlertTriangle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { useRef, useState } from "react";
-import { EmptyState } from "@/components/shared/EmptyState";
 
 export default function RecruiterCompanyPage() {
   const queryClient = useQueryClient();
@@ -30,6 +30,22 @@ export default function RecruiterCompanyPage() {
     queryFn: async () => {
       const response = await api.get("/companies/my");
       return response.data.data;
+    },
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: FormData) => {
+      const response = await api.post("/companies", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      toast.success("Company profile created successfully!");
+      queryClient.invalidateQueries({ queryKey: ["my-company"] });
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Failed to create company profile");
     },
   });
 
@@ -52,7 +68,11 @@ export default function RecruiterCompanyPage() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    updateMutation.mutate(formData);
+    if (!company) {
+      createMutation.mutate(formData);
+    } else {
+      updateMutation.mutate(formData);
+    }
   };
 
   const handleLogoClick = () => {
@@ -79,35 +99,29 @@ export default function RecruiterCompanyPage() {
     );
   }
 
-  // Show empty state if no company data exists yet
-  if (!isLoading && !company) {
-    return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">Company Profile</h1>
-          <p className="text-muted-foreground">
-            Manage your company information visible to candidates
-          </p>
-        </div>
-        <EmptyState
-          icon={Building}
-          title="No company profile yet"
-          description="Create your company profile to post jobs and attract candidates."
-          actionLabel="Create Profile"
-          onAction={() => {}}
-        />
-      </div>
-    );
-  }
+  // Show create form if no company exists
+  const isCreating = !company && !isLoading;
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Company Profile</h1>
+        <h1 className="text-2xl font-bold">
+          {isCreating ? "Create Company Profile" : "Company Profile"}
+        </h1>
         <p className="text-muted-foreground">
-          Manage your company information visible to candidates
+          {isCreating 
+            ? "Set up your company profile to start posting jobs"
+            : "Manage your company information visible to candidates"}
         </p>
       </div>
+
+      {isCreating && (
+        <Alert className="bg-amber-50 border-amber-200">
+          <AlertDescription className="text-amber-800">
+            You need to create a company profile before you can post jobs.
+          </AlertDescription>
+        </Alert>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
@@ -225,15 +239,15 @@ export default function RecruiterCompanyPage() {
           <Button
             type="submit"
             className="bg-indigo-600 hover:bg-indigo-700"
-            disabled={updateMutation.isPending}
+            disabled={updateMutation.isPending || createMutation.isPending}
           >
-            {updateMutation.isPending ? (
+            {updateMutation.isPending || createMutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
+                {isCreating ? "Creating..." : "Saving..."}
               </>
             ) : (
-              "Save Changes"
+              isCreating ? "Create Company Profile" : "Save Changes"
             )}
           </Button>
         </div>
