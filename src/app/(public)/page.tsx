@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
@@ -174,6 +176,22 @@ function getCompanyGradient(name: string) {
 }
 
 export default function HomePage() {
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      router.push(`/jobs?search=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      router.push("/jobs");
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
   // Fetch featured jobs from API
   const { data: jobsData, isLoading } = useQuery({
     queryKey: ["featured-jobs"],
@@ -201,7 +219,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
+      <section className="relative pt-20 pb-20 lg:pt-16 lg:pb-40 overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0 bg-background" />
         <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[120px]" />
@@ -218,7 +236,7 @@ export default function HomePage() {
         />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-4xl mx-auto">
+          <div className="text-center max-w-4xl mx-auto space-y-8">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border mb-8">
               <Sparkles className="w-4 h-4 text-cyan-600 dark:text-cyan-500" />
@@ -238,30 +256,35 @@ export default function HomePage() {
             </p>
 
             {/* Search Bar */}
-            <div className="max-w-2xl mx-auto mb-10">
-              <div className="flex gap-2 p-2 bg-card rounded-full border border-border backdrop-blur-sm shadow-lg">
-                <div className="flex-1 flex items-center px-4">
-                  <Search className="w-5 h-5 text-muted-foreground mr-3" />
+            <div className="max-w-2xl mx-auto mb-10 pt-10 px-4 sm:px-0">
+              <div className="flex items-center gap-2 p-2 bg-card rounded-full border border-border backdrop-blur-sm shadow-lg h-14 sm:h-16">
+                <div className="flex-1 flex items-center px-4 sm:px-6 min-w-0">
+                  <Search className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground mr-3 sm:mr-4 flex-shrink-0" />
                   <input
                     type="text"
-                    placeholder="Job title, keywords, or company"
-                    className="w-full bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
+                    placeholder="Job title, keywords..."
+                    className="w-full bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-base sm:text-lg min-w-0"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleKeyDown}
                   />
                 </div>
-                <Button className="bg-gradient-to-r from-blue-500 to-violet-600 hover:from-blue-600 hover:to-violet-700 px-6 rounded-full">
+                {/* Mobile: Icon button */}
+                <Button 
+                  size="icon"
+                  className="bg-gradient-to-r from-blue-500 to-violet-600 hover:from-blue-600 hover:to-violet-700 rounded-full w-10 h-10 flex-shrink-0 sm:hidden"
+                  onClick={handleSearch}
+                >
+                  <Search className="w-4 h-4" />
+                </Button>
+                {/* Desktop: Text button */}
+                <Button 
+                  className="hidden sm:flex bg-gradient-to-r from-blue-500 to-violet-600 hover:from-blue-600 hover:to-violet-700 px-8 rounded-full h-12 text-base"
+                  onClick={handleSearch}
+                >
                   Search Jobs
                 </Button>
               </div>
-            </div>
-
-            {/* CTA Buttons */}
-            <div className="flex items-center justify-center gap-4 flex-wrap">
-              <Button size="lg" className="bg-gradient-to-r from-blue-500 to-violet-600 hover:from-blue-600 hover:to-violet-700 rounded-full px-8" asChild>
-                <Link href="/jobs">Browse Jobs</Link>
-              </Button>
-              <Button size="lg" variant="outline" className="border-border hover:bg-muted rounded-full px-8" asChild>
-                <Link href="/register">Post a Job</Link>
-              </Button>
             </div>
           </div>
         </div>

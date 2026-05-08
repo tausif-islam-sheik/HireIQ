@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/axios";
 import { JobCard } from "@/components/shared/JobCard";
@@ -76,6 +77,7 @@ const sortOptions = [
 ];
 
 export default function JobsPage() {
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState("newest");
@@ -85,6 +87,14 @@ export default function JobsPage() {
     location: "all",
     experience: "all",
   });
+
+  // Read search query from URL on mount
+  useEffect(() => {
+    const urlSearch = searchParams.get("search");
+    if (urlSearch) {
+      setSearchQuery(urlSearch);
+    }
+  }, [searchParams]);
 
   const filters = [
     { key: "category", label: "Category", options: categories },
@@ -125,6 +135,7 @@ export default function JobsPage() {
   };
 
   const handleClearFilters = () => {
+    setSearchQuery("");
     setActiveFilters({
       type: "all",
       category: "all",
@@ -132,6 +143,8 @@ export default function JobsPage() {
       experience: "all",
     });
     setCurrentPage(1);
+    // Update URL to remove search param
+    window.history.replaceState({}, "", "/jobs");
   };
 
   const handlePageChange = (page: number) => {
