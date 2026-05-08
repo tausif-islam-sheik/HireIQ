@@ -64,7 +64,7 @@ export default function RecruiterDashboardPage() {
             />
             <StatsCard
               title="Shortlisted"
-              value={stats?.interviewCount || 0}
+              value={stats?.shortlistedCount || 0}
               description="Candidates for interview"
               icon={UserCheck}
             />

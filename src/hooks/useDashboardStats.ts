@@ -30,6 +30,7 @@ export interface DashboardStats {
   myJobs?: number;
   companyJobs?: number;
   pendingReviews?: number;
+  shortlistedCount?: number;
   interviewCount?: number;
   savedJobs?: number;
 }

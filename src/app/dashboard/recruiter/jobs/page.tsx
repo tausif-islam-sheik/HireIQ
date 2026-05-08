@@ -41,8 +41,8 @@ export default function RecruiterJobsPage() {
   const { data: jobs, isLoading } = useQuery({
     queryKey: ["recruiter-jobs"],
     queryFn: async () => {
-      const response = await api.get("/jobs");
-      return response.data.data.jobs as Job[];
+      const response = await api.get("/jobs/my");
+      return response.data.data as Job[];
     },
   });
 
