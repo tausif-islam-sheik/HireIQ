@@ -7,14 +7,21 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, DollarSign, Clock, Building2, Bookmark } from "lucide-react";
 import { formatDate, truncateText } from "@/lib/utils";
-import { useState } from "react";
+import { useSavedJobs } from "@/hooks/useSavedJobs";
+import { useEffect, useState } from "react";
 
 interface JobCardProps {
   job: Job;
 }
 
 export function JobCard({ job }: JobCardProps) {
+  const { savedJobs, saveJob, unsaveJob, isSaving, isUnsaving } = useSavedJobs();
   const [isBookmarked, setIsBookmarked] = useState(false);
+
+  useEffect(() => {
+    const saved = savedJobs?.some((sj) => sj.jobId === job.id);
+    setIsBookmarked(saved || false);
+  }, [savedJobs, job.id]);
 
   const typeColors: Record<string, string> = {
     FULL_TIME: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
@@ -51,8 +58,15 @@ export function JobCard({ job }: JobCardProps) {
             </div>
           </div>
           <button
-            onClick={() => setIsBookmarked(!isBookmarked)}
-            className={`p-2 rounded-lg transition-colors ${
+            onClick={async () => {
+              if (isBookmarked) {
+                await unsaveJob(job.id);
+              } else {
+                await saveJob(job.id);
+              }
+            }}
+            disabled={isSaving || isUnsaving}
+            className={`p-2 rounded-lg transition-colors disabled:opacity-50 ${
               isBookmarked
                 ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-900"
                 : "hover:bg-muted"
