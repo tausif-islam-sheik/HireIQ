@@ -21,9 +21,10 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Application, ApplicationStatus } from "@/types";
 import { getStatusColor } from "@/lib/utils";
-import { Briefcase, Users, ArrowRight, User, Calendar, Mail } from "lucide-react";
+import { Briefcase, Users, ArrowRight, User, Calendar, Mail, Inbox } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
+import { EmptyState } from "@/components/shared/EmptyState";
 
 const pipelineStages: ApplicationStatus[] = [
   "PENDING",
@@ -120,6 +121,15 @@ export default function RecruiterPipelinePage() {
         </Select>
       </div>
 
+      {applications && applications.length === 0 ? (
+        <EmptyState
+          icon={Inbox}
+          title="No applications yet"
+          description="Applications will appear here when candidates apply to your jobs."
+          actionLabel="View Jobs"
+          actionHref="/dashboard/recruiter/jobs"
+        />
+      ) : (
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 overflow-x-auto">
         {pipelineStages.map((stage) => {
           const stageApps = getApplicationsByStage(stage);
@@ -215,9 +225,11 @@ export default function RecruiterPipelinePage() {
                   ))}
 
                   {stageApps.length === 0 && (
-                    <div className="text-center py-4 text-sm text-muted-foreground">
-                      No candidates
-                    </div>
+                    <EmptyState
+                      icon={Users}
+                      title=""
+                      description="No candidates in this stage"
+                    />
                   )}
                 </CardContent>
               </Card>
@@ -225,6 +237,7 @@ export default function RecruiterPipelinePage() {
           );
         })}
       </div>
+      )}
 
       {/* Pipeline Stats */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">

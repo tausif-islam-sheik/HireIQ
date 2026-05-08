@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ResumeAnalyzer } from "@/components/ai/ResumeAnalyzer";
 import { Resume } from "@/types";
 import { Upload, FileText, AlertCircle, CheckCircle2, Loader2, Sparkles, Download } from "lucide-react";
+import { EmptyState } from "@/components/shared/EmptyState";
 import { toast } from "sonner";
 
 export default function CandidateResumePage() {
@@ -182,12 +183,11 @@ export default function CandidateResumePage() {
             {resume?.aiAnalysis ? (
               <ResumeAnalyzer analysis={resume.aiAnalysis} />
             ) : (
-              <div className="text-center py-8">
-                <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">
-                  Upload your resume to get AI-powered analysis
-                </p>
-              </div>
+              <EmptyState
+                icon={Sparkles}
+                title="No AI analysis yet"
+                description="Upload your resume to get AI-powered analysis of your skills and experience."
+              />
             )}
           </CardContent>
         </Card>

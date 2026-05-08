@@ -1,7 +1,8 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/axios";
+import { Pagination } from "@/components/shared/Pagination";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -26,6 +27,7 @@ import { Briefcase, Building2, Calendar, Eye, Trash2, FileText } from "lucide-re
 import Link from "next/link";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -36,8 +38,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
+const PAGE_SIZE = 10;
+
 export default function CandidateApplicationsPage() {
   const queryClient = useQueryClient();
+  const [currentPage, setCurrentPage] = useState(1);
 
   const { data: applicationsData, isLoading } = useQuery({
     queryKey: ["my-applications"],
@@ -117,7 +122,7 @@ export default function CandidateApplicationsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {applications?.map((application) => (
+                {applications?.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((application) => (
                   <TableRow key={application.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -201,6 +206,16 @@ export default function CandidateApplicationsPage() {
                 ))}
               </TableBody>
             </Table>
+            {/* Pagination */}
+            {applications && applications.length > PAGE_SIZE && (
+              <div className="mt-4 flex justify-center">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={Math.ceil(applications.length / PAGE_SIZE)}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
       )}

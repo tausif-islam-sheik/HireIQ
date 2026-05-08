@@ -32,6 +32,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { Pagination } from "@/components/shared/Pagination";
 import {
   Dialog,
   DialogContent,
@@ -57,10 +58,13 @@ interface JobData {
   };
 }
 
+const PAGE_SIZE = 10;
+
 export default function AdminJobsPage() {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const { data: jobs, isLoading } = useQuery({
     queryKey: ["admin-jobs", searchQuery, statusFilter],
@@ -158,7 +162,7 @@ export default function AdminJobsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {jobs?.map((job) => (
+                {jobs?.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((job) => (
                 <TableRow key={job.id}>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -234,8 +238,18 @@ export default function AdminJobsPage() {
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
-        </CardContent>
+            </Table>
+            {/* Pagination */}
+            {jobs && jobs.length > PAGE_SIZE && (
+              <div className="mt-4 flex justify-center">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={Math.ceil(jobs.length / PAGE_SIZE)}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
+            )}
+          </CardContent>
       </Card>
       )}
     </div>

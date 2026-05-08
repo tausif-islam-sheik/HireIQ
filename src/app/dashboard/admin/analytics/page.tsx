@@ -131,16 +131,16 @@ export default function AdminAnalyticsPage() {
           <CardContent>
             <div className="space-y-4">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">New this week</span>
-                <span className="font-medium">+156</span>
+                <span className="text-muted-foreground">Total users</span>
+                <span className="font-medium">{analytics?.totalUsers?.toLocaleString() || 0}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">New this month</span>
-                <span className="font-medium">+623</span>
+                <span className="text-muted-foreground">Total applications</span>
+                <span className="font-medium">{analytics?.totalApplications?.toLocaleString() || 0}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Retention rate</span>
-                <span className="font-medium">87%</span>
+                <span className="text-muted-foreground">Total hires</span>
+                <span className="font-medium">{analytics?.totalHires?.toLocaleString() || 0}</span>
               </div>
             </div>
           </CardContent>
@@ -153,9 +153,9 @@ export default function AdminAnalyticsPage() {
           <CardContent>
             <div className="space-y-4">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Active jobs</span>
+                <span className="text-muted-foreground">Total jobs</span>
                 <span className="font-medium">
-                  {Math.round((analytics?.totalJobs || 0) * 0.7)}
+                  {analytics?.totalJobs?.toLocaleString() || 0}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -167,8 +167,12 @@ export default function AdminAnalyticsPage() {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Fill rate</span>
-                <span className="font-medium">68%</span>
+                <span className="text-muted-foreground">Hire rate</span>
+                <span className="font-medium">
+                  {analytics?.totalApplications
+                    ? `${Math.round((analytics.totalHires / analytics.totalApplications) * 100)}%`
+                    : "0%"}
+                </span>
               </div>
             </div>
           </CardContent>
@@ -176,22 +180,21 @@ export default function AdminAnalyticsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">AI Usage</CardTitle>
+            <CardTitle className="text-lg">Status Overview</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Resume analyses</span>
-                <span className="font-medium">12,456</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">JD generations</span>
-                <span className="font-medium">3,892</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Interview sessions</span>
-                <span className="font-medium">8,234</span>
-              </div>
+              {analytics?.statusDistribution?.map((status) => (
+                <div key={status.status} className="flex justify-between">
+                  <span className="text-muted-foreground capitalize">{status.status.replace("_", " ").toLowerCase()}</span>
+                  <span className="font-medium">{status.count}</span>
+                </div>
+              )) || (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">No status data</span>
+                  <span className="font-medium">-</span>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

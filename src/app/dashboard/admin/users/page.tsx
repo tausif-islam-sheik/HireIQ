@@ -34,6 +34,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { UserRole } from "@/types";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { Pagination } from "@/components/shared/Pagination";
 
 interface UserData {
   id: string;
@@ -48,10 +49,13 @@ interface UserData {
   };
 }
 
+const PAGE_SIZE = 10;
+
 export default function AdminUsersPage() {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const { data: users, isLoading } = useQuery({
     queryKey: ["admin-users", searchQuery, roleFilter],
@@ -160,7 +164,7 @@ export default function AdminUsersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users?.map((user) => (
+              {users?.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -217,6 +221,15 @@ export default function AdminUsersPage() {
               ))}
             </TableBody>
           </Table>
+          )}
+          {users && users.length > PAGE_SIZE && (
+            <div className="mt-4 flex justify-center">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={Math.ceil(users.length / PAGE_SIZE)}
+                onPageChange={setCurrentPage}
+              />
+            </div>
           )}
         </CardContent>
       </Card>

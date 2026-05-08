@@ -24,6 +24,7 @@ import { Building2, Search, Globe, Users, Briefcase, CheckCircle, Ban, Building 
 import { useState } from "react";
 import { toast } from "sonner";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { Pagination } from "@/components/shared/Pagination";
 
 interface CompanyData {
   id: string;
@@ -39,9 +40,12 @@ interface CompanyData {
   };
 }
 
+const PAGE_SIZE = 10;
+
 export default function AdminCompaniesPage() {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const { data: companies, isLoading } = useQuery({
     queryKey: ["admin-companies", searchQuery],
@@ -122,7 +126,7 @@ export default function AdminCompaniesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {companies?.map((company) => (
+                {companies?.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((company) => (
                 <TableRow key={company.id}>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -182,7 +186,17 @@ export default function AdminCompaniesPage() {
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
+            </Table>
+            {/* Pagination */}
+            {companies && companies.length > PAGE_SIZE && (
+              <div className="mt-4 flex justify-center">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={Math.ceil(companies.length / PAGE_SIZE)}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
+            )}
         </CardContent>
       </Card>
       )}

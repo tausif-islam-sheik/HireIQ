@@ -3,7 +3,7 @@
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
-import { Users, Briefcase, FileText, Building2, TrendingUp } from "lucide-react";
+import { Users, Briefcase, FileText, Building2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
@@ -41,28 +41,24 @@ export default function AdminDashboardPage() {
               value={stats?.totalUsers || 0}
               description="Registered users"
               icon={Users}
-              trend={{ value: 12, label: "from last month" }}
             />
             <StatsCard
               title="Total Jobs"
               value={stats?.totalJobs || 0}
               description="Active job postings"
               icon={Briefcase}
-              trend={{ value: 8, label: "from last month" }}
             />
             <StatsCard
               title="Applications"
               value={stats?.totalApplications || 0}
               description="Total applications received"
               icon={FileText}
-              trend={{ value: 24, label: "from last month" }}
             />
             <StatsCard
               title="Companies"
               value={stats?.totalCompanies || 0}
               description="Registered companies"
               icon={Building2}
-              trend={{ value: 5, label: "from last month" }}
             />
           </>
         )}

@@ -16,7 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Bookmark, SlidersHorizontal } from "lucide-react";
+import { Bookmark, SlidersHorizontal, SearchX } from "lucide-react";
+import { EmptyState } from "@/components/shared/EmptyState";
 import { Job, JobFilterParams, ApiResponse, PaginationInfo } from "@/types";
 
 const jobTypes = [
@@ -163,10 +164,13 @@ export default function CandidateJobsPage() {
           </div>
 
           {!isLoading && data?.jobs?.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground mb-4">No jobs found matching your criteria</p>
-              <Button onClick={handleClearFilters}>Clear Filters</Button>
-            </div>
+            <EmptyState
+              icon={SearchX}
+              title="No jobs found"
+              description="No jobs match your current search and filter criteria."
+              actionLabel="Clear Filters"
+              onAction={handleClearFilters}
+            />
           )}
 
           {!isLoading && data?.pagination && data.pagination.totalPages > 1 && (

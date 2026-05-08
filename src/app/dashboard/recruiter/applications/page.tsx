@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/axios";
+import { Pagination } from "@/components/shared/Pagination";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -43,9 +44,12 @@ const statusOptions: ApplicationStatus[] = [
   "REJECTED",
 ];
 
+const PAGE_SIZE = 10;
+
 export default function RecruiterApplicationsPage() {
   const queryClient = useQueryClient();
   const [selectedJob, setSelectedJob] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const { data: applicationsData, isLoading } = useQuery({
     queryKey: ["recruiter-applications", selectedJob],
@@ -141,7 +145,7 @@ export default function RecruiterApplicationsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {applications?.map((application) => (
+                {applications?.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((application) => (
                   <TableRow key={application.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -218,6 +222,16 @@ export default function RecruiterApplicationsPage() {
                 ))}
               </TableBody>
             </Table>
+            {/* Pagination */}
+            {applications && applications.length > PAGE_SIZE && (
+              <div className="mt-4 flex justify-center">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={Math.ceil(applications.length / PAGE_SIZE)}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
