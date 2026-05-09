@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Bell, Check, Trash2, Briefcase, User, MessageSquare, Loader2 } from "lucide-react";
+import { Bell, Check, Trash2, Briefcase, MessageSquare, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,10 +12,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDistanceToNow } from "date-fns";
 import { useAuthStore } from "@/store/authStore";
+import api from "@/lib/axios";
 import { cn } from "@/lib/utils";
 
 interface Notification {
@@ -23,9 +23,8 @@ interface Notification {
   type: "JOB_APPLICATION" | "STATUS_UPDATE" | "MESSAGE" | "SYSTEM";
   title: string;
   message: string;
-  read: boolean;
+  isRead: boolean;
   createdAt: string;
-  link?: string;
 }
 
 const iconMap = {
@@ -42,6 +41,13 @@ const colorMap = {
   SYSTEM: "bg-amber-500",
 };
 
+const getNotificationLink = (type: string, userRole?: string) => {
+  if (userRole === "RECRUITER" || userRole === "ADMIN") {
+    return "/dashboard/recruiter/applicants";
+  }
+  return "/dashboard/candidate/applications";
+};
+
 export function NotificationBell() {
   const { user, isAuthenticated } = useAuthStore();
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -49,49 +55,14 @@ export function NotificationBell() {
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  // Fetch notifications
   useEffect(() => {
     if (!isAuthenticated) return;
 
     const fetchNotifications = async () => {
       setIsLoading(true);
       try {
-        // Simulated API call - replace with actual endpoint
-        // const response = await api.get("/notifications");
-        // setNotifications(response.data);
-        
-        // Demo data for now
-        const demoNotifications: Notification[] = [
-          {
-            id: "1",
-            type: "JOB_APPLICATION",
-            title: "New Application",
-            message: "Sarah Chen applied for Senior Frontend Developer",
-            read: false,
-            createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 min ago
-            link: "/dashboard/recruiter/applicants",
-          },
-          {
-            id: "2",
-            type: "STATUS_UPDATE",
-            title: "Application Reviewed",
-            message: "Your application at Google has been reviewed",
-            read: false,
-            createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
-            link: "/dashboard/candidate/applications",
-          },
-          {
-            id: "3",
-            type: "MESSAGE",
-            title: "New Message",
-            message: "Recruiter from TechCorp sent you a message",
-            read: true,
-            createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
-            link: "/dashboard/candidate/messages",
-          },
-        ];
-        setNotifications(demoNotifications);
-        setUnreadCount(demoNotifications.filter((n) => !n.read).length);
+        const response = await api.get("/notifications");
+        setNotifications(response.data.data || []);
       } catch (error) {
         console.error("Failed to fetch notifications:", error);
       } finally {
@@ -99,19 +70,30 @@ export function NotificationBell() {
       }
     };
 
-    fetchNotifications();
+    const fetchUnreadCount = async () => {
+      try {
+        const response = await api.get("/notifications/unread-count");
+        setUnreadCount(response.data.data?.count || 0);
+      } catch (error) {
+        console.error("Failed to fetch unread count:", error);
+      }
+    };
 
-    // Set up polling or WebSocket for real-time updates
-    const interval = setInterval(fetchNotifications, 30000); // Poll every 30s
+    fetchNotifications();
+    fetchUnreadCount();
+
+    const interval = setInterval(() => {
+      fetchNotifications();
+      fetchUnreadCount();
+    }, 30000);
+    
     return () => clearInterval(interval);
   }, [isAuthenticated]);
 
   const markAsRead = async (id: string) => {
     try {
-      // await api.put(`/notifications/${id}/read`);
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-      );
+      await api.put(`/notifications/${id}/read`);
+      setNotifications((prev) => prev.map((n) => n.id === id ? { ...n, isRead: true } : n));
       setUnreadCount((prev) => Math.max(0, prev - 1));
     } catch (error) {
       console.error("Failed to mark as read:", error);
@@ -120,8 +102,8 @@ export function NotificationBell() {
 
   const markAllAsRead = async () => {
     try {
-      // await api.put("/notifications/read-all");
-      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+      await api.put("/notifications/read-all");
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
       setUnreadCount(0);
     } catch (error) {
       console.error("Failed to mark all as read:", error);
@@ -130,10 +112,10 @@ export function NotificationBell() {
 
   const deleteNotification = async (id: string) => {
     try {
-      // await api.delete(`/notifications/${id}`);
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
+      await api.delete(`/notifications/${id}`);
       const deleted = notifications.find((n) => n.id === id);
-      if (deleted && !deleted.read) {
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+      if (deleted && !deleted.isRead) {
         setUnreadCount((prev) => Math.max(0, prev - 1));
       }
     } catch (error) {
@@ -149,7 +131,7 @@ export function NotificationBell() {
         <Button variant="ghost" size="icon" className="relative">
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white animate-pulse">
+            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}
@@ -159,12 +141,7 @@ export function NotificationBell() {
         <DropdownMenuLabel className="flex items-center justify-between">
           <span className="font-semibold">Notifications</span>
           {unreadCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={markAllAsRead}
-              className="h-auto py-1 px-2 text-xs"
-            >
+            <Button variant="ghost" size="sm" onClick={markAllAsRead} className="h-auto py-1 px-2 text-xs">
               Mark all read
             </Button>
           )}
@@ -182,89 +159,40 @@ export function NotificationBell() {
             </div>
           ) : (
             notifications.map((notification) => {
-              const Icon = iconMap[notification.type];
-              const iconColor = colorMap[notification.type];
+              const Icon = iconMap[notification.type] || Bell;
+              const iconColor = colorMap[notification.type] || "bg-gray-500";
 
               return (
                 <DropdownMenuItem
                   key={notification.id}
                   className={cn(
-                    "flex items-start gap-3 p-3 cursor-pointer focus:bg-accent",
-                    !notification.read && "bg-blue-50/50 dark:bg-blue-950/20"
+                    "flex items-start gap-3 p-3 cursor-pointer",
+                    !notification.isRead && "bg-blue-50/50 dark:bg-blue-950/20"
                   )}
-                  onClick={() => {
-                    if (!notification.read) {
-                      markAsRead(notification.id);
-                    }
-                  }}
+                  onClick={() => !notification.isRead && markAsRead(notification.id)}
                 >
-                  {notification.link ? (
-                    <Link
-                      href={notification.link}
-                      className="flex items-start gap-3 flex-1"
+                  <div className={cn("flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center", iconColor)}>
+                    <Icon className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <Link 
+                      href={getNotificationLink(notification.type, user?.role)}
                       onClick={() => setIsOpen(false)}
+                      className="block"
                     >
-                      <div
-                        className={cn(
-                          "flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center",
-                          iconColor
-                        )}
-                      >
-                        <Icon className="h-4 w-4 text-white" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p
-                          className={cn(
-                            "text-sm font-medium",
-                            !notification.read && "text-foreground"
-                          )}
-                        >
-                          {notification.title}
-                        </p>
-                        <p className="text-xs text-muted-foreground line-clamp-2">
-                          {notification.message}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {formatDistanceToNow(new Date(notification.createdAt), {
-                            addSuffix: true,
-                          })}
-                        </p>
-                      </div>
+                      <p className={cn("text-sm font-medium", !notification.isRead && "text-foreground")}>
+                        {notification.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground line-clamp-2">{notification.message}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+                      </p>
                     </Link>
-                  ) : (
-                    <>
-                      <div
-                        className={cn(
-                          "flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center",
-                          iconColor
-                        )}
-                      >
-                        <Icon className="h-4 w-4 text-white" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p
-                          className={cn(
-                            "text-sm font-medium",
-                            !notification.read && "text-foreground"
-                          )}
-                        >
-                          {notification.title}
-                        </p>
-                        <p className="text-xs text-muted-foreground line-clamp-2">
-                          {notification.message}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {formatDistanceToNow(new Date(notification.createdAt), {
-                            addSuffix: true,
-                          })}
-                        </p>
-                      </div>
-                    </>
-                  )}
+                  </div>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="flex-shrink-0 h-7 w-7 opacity-0 group-hover:opacity-100 hover:opacity-100"
+                    className="flex-shrink-0 h-7 w-7"
                     onClick={(e) => {
                       e.stopPropagation();
                       deleteNotification(notification.id);
@@ -279,9 +207,7 @@ export function NotificationBell() {
         </ScrollArea>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="justify-center" asChild>
-          <Link href="/dashboard/notifications" className="text-sm text-center">
-            View all notifications
-          </Link>
+          <Link href="/dashboard/notifications">View all notifications</Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
