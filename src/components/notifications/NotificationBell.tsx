@@ -43,7 +43,7 @@ const colorMap = {
 
 const getNotificationLink = (type: string, userRole?: string) => {
   if (userRole === "RECRUITER" || userRole === "ADMIN") {
-    return "/dashboard/recruiter/applicants";
+    return "/dashboard/recruiter/applications";
   }
   return "/dashboard/candidate/applications";
 };
