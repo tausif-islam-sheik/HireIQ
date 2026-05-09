@@ -8,7 +8,9 @@ const footerLinks = {
     { href: "/about", label: "About Us" },
     { href: "/blog", label: "Blog" },
     { href: "/contact", label: "Contact" },
+    { href: "/help", label: "Help Center" },
     { href: "/privacy", label: "Privacy Policy" },
+    { href: "/terms", label: "Terms of Service" },
   ],
   candidates: [
     { href: "/jobs", label: "Browse Jobs" },

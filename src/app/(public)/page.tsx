@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/axios";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Search,
   Sparkles,
@@ -30,7 +31,18 @@ import {
   Layers,
   DollarSign,
   UserCheck,
+  HelpCircle,
+  ChevronDown,
+  Mail,
+  Send,
 } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Input } from "@/components/ui/input";
 
 // Stats data
 const stats = [
@@ -97,6 +109,40 @@ const categories = [
   { name: "Product", count: 85, icon: Layers, gradient: "from-indigo-100 to-blue-100 dark:from-indigo-500/20 dark:to-blue-500/20" },
   { name: "Finance", count: 140, icon: DollarSign, gradient: "from-green-100 to-emerald-100 dark:from-green-500/20 dark:to-emerald-500/20" },
   { name: "HR", count: 75, icon: Users, gradient: "from-rose-100 to-pink-100 dark:from-rose-500/20 dark:to-pink-500/20" },
+];
+
+// FAQ Data
+const faqs = [
+  {
+    question: "How does HireIQ's AI resume analyzer work?",
+    answer:
+      "Our AI resume analyzer uses Claude AI to evaluate your resume against job requirements. It provides match scores (0-100), identifies your strengths, highlights skill gaps, and gives actionable suggestions for improvement. Simply upload your resume in your candidate dashboard to get started.",
+  },
+  {
+    question: "Is HireIQ free for job seekers?",
+    answer:
+      "Yes! All candidate features are completely free, including job applications, AI resume analysis, interview coaching, and saving jobs for later. Employers can post jobs and access basic features for free, with premium plans available for advanced AI features.",
+  },
+  {
+    question: "How do employers use the AI candidate ranking feature?",
+    answer:
+      "When candidates apply to a job, our AI automatically analyzes their resumes against the job description and ranks them by match score. Recruiters can see ranked candidates in their dashboard, along with detailed match percentages and AI-generated insights for each applicant.",
+  },
+  {
+    question: "What makes HireIQ different from other job platforms?",
+    answer:
+      "HireIQ combines traditional job board functionality with cutting-edge AI features: resume analysis, job description generation, candidate ranking, and interview coaching. Our AI helps both candidates optimize their applications and employers find the best matches faster.",
+  },
+  {
+    question: "How accurate is the AI interview coach?",
+    answer:
+      "Our AI interview coach provides personalized practice sessions based on your target role. It asks role-specific questions, evaluates your responses, and gives constructive feedback. While it's a great preparation tool, we recommend combining it with real mock interviews for best results.",
+  },
+  {
+    question: "Can I edit my application after submitting?",
+    answer:
+      "Once submitted, applications cannot be edited to maintain fairness in the hiring process. However, you can withdraw your application and reapply if the job is still open. Make sure to review your resume and cover letter carefully before submitting.",
+  },
 ];
 
 // Testimonials
@@ -557,33 +603,134 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Banner */}
+      {/* FAQ Section - Premium Design */}
+      <section className="py-24 lg:py-32 relative overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/20 to-background" />
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-violet-500/5 rounded-full blur-[100px]" />
+
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Premium Header */}
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-violet-500/10 border border-blue-500/20 mb-8">
+              <HelpCircle className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <span className="text-sm font-medium text-blue-700 dark:text-blue-300">Support Center</span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent mb-4">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              Everything you need to know about HireIQ&apos;s AI-powered recruitment platform
+            </p>
+          </div>
+
+          {/* Premium FAQ Card with Glassmorphism */}
+          <div className="relative">
+            {/* Glow Effect */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 via-violet-500/20 to-purple-500/20 rounded-3xl blur-xl opacity-50" />
+
+            <Card className="relative border-0 shadow-2xl shadow-blue-500/5 bg-card/80 backdrop-blur-xl">
+              <CardContent className="p-8 sm:p-10">
+                <Accordion type="single" collapsible className="w-full space-y-4">
+                  {faqs.map((faq, index) => (
+                    <AccordionItem
+                      key={index}
+                      value={`item-${index}`}
+                      className="border border-border/50 rounded-xl px-6 data-[state=open]:border-blue-500/30 data-[state=open]:bg-blue-500/5 transition-all duration-300"
+                    >
+                      <AccordionTrigger className="text-left py-5 hover:no-underline group">
+                        <div className="flex items-center gap-4">
+                          <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500/20 to-violet-500/20 flex items-center justify-center group-data-[state=open]:bg-blue-500 group-data-[state=open]:text-white transition-all duration-300">
+                            <span className="text-sm font-semibold text-blue-600 group-data-[state=open]:text-white">
+                              {String(index + 1).padStart(2, "0")}
+                          </span>
+                          </div>
+                          <span className="font-semibold text-base sm:text-lg group-data-[state=open]:text-blue-600 dark:group-data-[state=open]:text-blue-400 transition-colors">
+                            {faq.question}
+                          </span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="pb-5 pl-12">
+                        <p className="text-muted-foreground leading-relaxed text-base">
+                          {faq.answer}
+                        </p>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Premium Support CTA */}
+          <div className="mt-12 text-center">
+            <div className="inline-flex flex-col sm:flex-row items-center gap-4 p-6 rounded-2xl bg-gradient-to-r from-muted/50 to-muted/30 border border-border/50">
+              <div className="text-left">
+                <p className="font-semibold text-foreground">Still have questions?</p>
+                <p className="text-sm text-muted-foreground">Can&apos;t find the answer you&apos;re looking for?</p>
+              </div>
+              <Button
+                className="bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white shadow-lg shadow-blue-500/25 px-6"
+                asChild
+              >
+                <Link href="/help">
+                  <HelpCircle className="w-4 h-4 mr-2" />
+                  Visit Help Center
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter Section */}
       <section className="py-20 lg:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-violet-600 to-purple-600 p-12 lg:p-16">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 p-12 lg:p-16">
             {/* Background Effects */}
             <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-white/10 rounded-full blur-[100px]" />
             <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-cyan-500/20 rounded-full blur-[80px]" />
 
-            <div className="relative text-center">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-sm">
-                Ready to Transform Your Hiring?
-              </h2>
-              <p className="text-white/90 mb-10 max-w-2xl mx-auto text-lg drop-shadow-sm">
-                Join thousands of companies and candidates who use HireIQ to find the perfect match.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 rounded-full px-8 font-semibold shadow-lg" asChild>
-                  <Link href="/register">Get Started Free</Link>
-                </Button>
-                <Button size="lg" variant="outline" className="bg-white text-blue-600 hover:bg-blue-50 rounded-full px-8 font-semibold shadow-lg" asChild>
-                  <Link href="/jobs">Browse Jobs</Link>
-                </Button>
+            <div className="relative grid lg:grid-cols-2 gap-8 items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-6">
+                  <Mail className="w-4 h-4 text-cyan-300" />
+                  <span className="text-sm text-white/90">Stay Updated</span>
+                </div>
+                <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+                  Subscribe to Our Newsletter
+                </h2>
+                <p className="text-white/80 text-lg">
+                  Get the latest job opportunities, career tips, recruitment insights, and AI hiring trends delivered straight to your inbox.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Input
+                    type="email"
+                    placeholder="Enter your email address"
+                    className="flex-1 bg-white/10 border-white/20 text-white placeholder:text-white/50 h-12"
+                  />
+                  <Button className="bg-white text-indigo-600 hover:bg-white/90 h-12 px-6">
+                    <Send className="w-4 h-4 mr-2" />
+                    Subscribe
+                  </Button>
+                </div>
+                <p className="text-sm text-white/60">
+                  No spam, ever. Unsubscribe at any time. Read our{" "}
+                  <Link href="/privacy" className="underline hover:text-white">
+                    Privacy Policy
+                  </Link>
+                  .
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
+
     </div>
   );
 }
