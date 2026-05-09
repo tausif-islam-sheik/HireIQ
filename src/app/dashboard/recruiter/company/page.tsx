@@ -51,7 +51,8 @@ export default function RecruiterCompanyPage() {
 
   const updateMutation = useMutation({
     mutationFn: async (data: FormData) => {
-      const response = await api.put("/companies/my", data, {
+      if (!company?.id) throw new Error("Company ID not found");
+      const response = await api.put(`/companies/${company.id}`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return response.data;
@@ -60,8 +61,8 @@ export default function RecruiterCompanyPage() {
       toast.success("Company profile updated");
       queryClient.invalidateQueries({ queryKey: ["my-company"] });
     },
-    onError: () => {
-      toast.error("Failed to update company profile");
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Failed to update company profile");
     },
   });
 
@@ -81,10 +82,17 @@ export default function RecruiterCompanyPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (file && company) {
       setIsUploading(true);
       const formData = new FormData();
       formData.append("logo", file);
+      // Include all existing company data
+      formData.append("name", company.name || "");
+      formData.append("website", company.website || "");
+      formData.append("industry", company.industry || "");
+      formData.append("size", company.size || "");
+      formData.append("location", company.location || "");
+      formData.append("description", company.description || "");
       updateMutation.mutate(formData);
       setIsUploading(false);
     }

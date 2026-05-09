@@ -27,8 +27,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Briefcase, Search, Building2, MapPin, Users, Eye, Trash2, FileX } from "lucide-react";
-import { useState } from "react";
+import { Briefcase, Search, Building2, MapPin, Users, Eye, Trash2, FileX, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -62,11 +62,20 @@ const PAGE_SIZE = 10;
 
 export default function AdminJobsPage() {
   const queryClient = useQueryClient();
+  const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { data: jobsData, isLoading } = useQuery({
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchQuery(searchInput);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  const { data: jobsData, isLoading, isFetching } = useQuery({
     queryKey: ["admin-jobs", searchQuery, statusFilter],
     queryFn: async () => {
       const params: { search?: string; isActive?: boolean } = {};
@@ -74,11 +83,12 @@ export default function AdminJobsPage() {
       if (statusFilter === "active") params.isActive = true;
       if (statusFilter === "inactive") params.isActive = false;
       
-      const response = await api.get("/admin/jobs", { params });
+      const response = await api.get("/jobs", { params });
       // Handle both direct array or nested object response
       const data = response.data.data;
       return (data.jobs || data || []) as JobData[];
     },
+    placeholderData: (previousData) => previousData,
   });
 
   // Ensure jobs is always an array
@@ -86,7 +96,7 @@ export default function AdminJobsPage() {
 
   const deleteMutation = useMutation({
     mutationFn: async (jobId: string) => {
-      const response = await api.delete(`/admin/jobs/${jobId}`);
+      const response = await api.delete(`/jobs/${jobId}`);
       return response.data;
     },
     onSuccess: () => {
@@ -98,11 +108,74 @@ export default function AdminJobsPage() {
     },
   });
 
-  if (isLoading) {
+  if (isLoading && !jobsData) {
     return (
       <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-96" />
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+          <div className="flex gap-2 items-center">
+            <Skeleton className="h-10 w-[200px]" />
+            <Skeleton className="h-10 w-[140px]" />
+          </div>
+        </div>
+        <Card>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead><Skeleton className="h-4 w-12" /></TableHead>
+                  <TableHead><Skeleton className="h-4 w-16" /></TableHead>
+                  <TableHead><Skeleton className="h-4 w-12" /></TableHead>
+                  <TableHead><Skeleton className="h-4 w-16" /></TableHead>
+                  <TableHead><Skeleton className="h-4 w-24" /></TableHead>
+                  <TableHead><Skeleton className="h-4 w-12" /></TableHead>
+                  <TableHead className="text-right"><Skeleton className="h-4 w-16 ml-auto" /></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {[...Array(10)].map((_, i) => (
+                  <TableRow key={i}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-4 w-4" />
+                        <Skeleton className="h-4 w-32" />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-4 w-4" />
+                        <Skeleton className="h-4 w-28" />
+                      </div>
+                    </TableCell>
+                    <TableCell><Skeleton className="h-5 w-20" /></TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-4 w-4" />
+                        <Skeleton className="h-4 w-24" />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-4 w-4" />
+                        <Skeleton className="h-4 w-6" />
+                      </div>
+                    </TableCell>
+                    <TableCell><Skeleton className="h-5 w-16" /></TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Skeleton className="h-8 w-8" />
+                        <Skeleton className="h-8 w-8" />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -116,16 +189,17 @@ export default function AdminJobsPage() {
             Manage all job postings on the platform
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search jobs..."
               className="pl-10 w-[200px]"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
             />
           </div>
+          {isFetching && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="All Status" />
@@ -147,7 +221,7 @@ export default function AdminJobsPage() {
               title="No jobs found"
               description={searchQuery ? "No jobs match your search criteria." : "There are no job postings on the platform yet."}
               actionLabel={searchQuery ? "Clear Search" : undefined}
-              onAction={searchQuery ? () => setSearchQuery("") : undefined}
+              onAction={searchQuery ? () => { setSearchInput(""); setSearchQuery(""); } : undefined}
             />
           </CardContent>
         </Card>

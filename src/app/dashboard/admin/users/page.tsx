@@ -28,9 +28,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { User, Search, Ban, CheckCircle, UserCheck, Users2 } from "lucide-react";
+import { User, Search, Ban, CheckCircle, UserCheck, Users2, Loader2 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { UserRole } from "@/types";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -53,22 +53,32 @@ const PAGE_SIZE = 10;
 
 export default function AdminUsersPage() {
   const queryClient = useQueryClient();
+  const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { data: usersData, isLoading } = useQuery({
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchQuery(searchInput);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  const { data: usersData, isLoading, isFetching } = useQuery({
     queryKey: ["admin-users", searchQuery, roleFilter],
     queryFn: async () => {
       const params: { search?: string; role?: string } = {};
       if (searchQuery) params.search = searchQuery;
       if (roleFilter !== "all") params.role = roleFilter;
       
-      const response = await api.get("/admin/users", { params });
+      const response = await api.get("/users", { params });
       // Handle both direct array or nested object response
       const data = response.data.data;
       return (data.users || data || []) as UserData[];
     },
+    placeholderData: (previousData) => previousData,
   });
 
   // Ensure users is always an array
@@ -76,7 +86,7 @@ export default function AdminUsersPage() {
 
   const toggleStatusMutation = useMutation({
     mutationFn: async ({ userId, isActive }: { userId: string; isActive: boolean }) => {
-      const response = await api.put(`/admin/users/${userId}/status`, { isActive });
+      const response = await api.put(`/users/${userId}/status`, { isActive });
       return response.data;
     },
     onSuccess: () => {
@@ -101,11 +111,60 @@ export default function AdminUsersPage() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading && !usersData) {
     return (
       <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-96" />
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-64" />
+        </div>
+        <Card>
+          <CardHeader>
+            <div className="flex flex-col sm:flex-row gap-4 justify-between">
+              <Skeleton className="h-6 w-24" />
+              <div className="flex gap-2 items-center">
+                <Skeleton className="h-10 w-[200px]" />
+                <Skeleton className="h-10 w-[140px]" />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead><Skeleton className="h-4 w-12" /></TableHead>
+                  <TableHead><Skeleton className="h-4 w-12" /></TableHead>
+                  <TableHead><Skeleton className="h-4 w-16" /></TableHead>
+                  <TableHead><Skeleton className="h-4 w-16" /></TableHead>
+                  <TableHead><Skeleton className="h-4 w-12" /></TableHead>
+                  <TableHead className="text-right"><Skeleton className="h-4 w-16 ml-auto" /></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {[...Array(10)].map((_, i) => (
+                  <TableRow key={i}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-4 w-4" />
+                        <div className="space-y-1">
+                          <Skeleton className="h-4 w-32" />
+                          <Skeleton className="h-3 w-40" />
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell><Skeleton className="h-5 w-20" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-28" /></TableCell>
+                    <TableCell><Skeleton className="h-5 w-16" /></TableCell>
+                    <TableCell className="text-right">
+                      <Skeleton className="h-8 w-24 ml-auto" />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -123,16 +182,17 @@ export default function AdminUsersPage() {
         <CardHeader>
           <div className="flex flex-col sm:flex-row gap-4 justify-between">
             <CardTitle>All Users</CardTitle>
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   placeholder="Search users..."
                   className="pl-10 w-[200px]"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
                 />
               </div>
+              {isFetching && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
               <Select value={roleFilter} onValueChange={setRoleFilter}>
                 <SelectTrigger className="w-[140px]">
                   <SelectValue placeholder="All Roles" />
@@ -154,7 +214,7 @@ export default function AdminUsersPage() {
               title="No users found"
               description={searchQuery ? "No users match your search criteria." : "There are no users on the platform yet."}
               actionLabel={searchQuery ? "Clear Search" : undefined}
-              onAction={searchQuery ? () => setSearchQuery("") : undefined}
+              onAction={searchQuery ? () => { setSearchInput(""); setSearchQuery(""); } : undefined}
             />
           ) : (
           <Table>

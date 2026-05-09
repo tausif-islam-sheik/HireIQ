@@ -39,21 +39,21 @@ export default function RecruiterProfilePage() {
       toast.success("Profile updated successfully");
       queryClient.invalidateQueries({ queryKey: ["recruiter-profile"] });
     },
-    onError: () => {
-      toast.error("Failed to update profile");
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Failed to update profile");
     },
   });
 
   const passwordMutation = useMutation({
     mutationFn: async (data: { currentPassword: string; newPassword: string }) => {
-      const response = await api.put("/users/password", data);
+      const response = await api.put("/users/change-password", data);
       return response.data;
     },
     onSuccess: () => {
       toast.success("Password updated successfully");
     },
-    onError: () => {
-      toast.error("Failed to update password");
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Failed to update password");
     },
   });
 

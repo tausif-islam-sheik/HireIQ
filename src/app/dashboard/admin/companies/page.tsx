@@ -20,8 +20,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Building2, Search, Globe, Users, Briefcase, CheckCircle, Ban, Building } from "lucide-react";
-import { useState } from "react";
+import { Building2, Search, Globe, Users, Briefcase, CheckCircle, Ban, Building, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Pagination } from "@/components/shared/Pagination";
@@ -44,18 +44,28 @@ const PAGE_SIZE = 10;
 
 export default function AdminCompaniesPage() {
   const queryClient = useQueryClient();
+  const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { data: companiesData, isLoading } = useQuery({
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchQuery(searchInput);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  const { data: companiesData, isLoading, isFetching } = useQuery({
     queryKey: ["admin-companies", searchQuery],
     queryFn: async () => {
       const params = searchQuery ? { search: searchQuery } : {};
-      const response = await api.get("/admin/companies", { params });
+      const response = await api.get("/companies", { params });
       // Handle both direct array or nested object response
       const data = response.data.data;
       return (data.companies || data || []) as CompanyData[];
     },
+    placeholderData: (previousData) => previousData,
   });
 
   // Ensure companies is always an array
@@ -63,7 +73,7 @@ export default function AdminCompaniesPage() {
 
   const verifyMutation = useMutation({
     mutationFn: async ({ companyId, isVerified }: { companyId: string; isVerified: boolean }) => {
-      const response = await api.put(`/admin/companies/${companyId}/verify`, { isVerified });
+      const response = await api.put(`/companies/${companyId}/verify`, { isVerified });
       return response.data;
     },
     onSuccess: () => {
@@ -75,11 +85,59 @@ export default function AdminCompaniesPage() {
     },
   });
 
-  if (isLoading) {
+  if (isLoading && !companiesData) {
     return (
       <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-96" />
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+          <div className="flex gap-2 items-center">
+            <Skeleton className="h-10 w-[250px]" />
+          </div>
+        </div>
+        <Card>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead><Skeleton className="h-4 w-20" /></TableHead>
+                  <TableHead><Skeleton className="h-4 w-16" /></TableHead>
+                  <TableHead><Skeleton className="h-4 w-20" /></TableHead>
+                  <TableHead><Skeleton className="h-4 w-24" /></TableHead>
+                  <TableHead className="text-right"><Skeleton className="h-4 w-16 ml-auto" /></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {[...Array(10)].map((_, i) => (
+                  <TableRow key={i}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-4 w-4" />
+                        <div className="space-y-1">
+                          <Skeleton className="h-4 w-32" />
+                          <Skeleton className="h-3 w-40" />
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                    <TableCell><Skeleton className="h-5 w-16" /></TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-4 w-4" />
+                        <Skeleton className="h-4 w-8" />
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Skeleton className="h-8 w-20 ml-auto" />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -93,14 +151,17 @@ export default function AdminCompaniesPage() {
             Manage and verify companies on the platform
           </p>
         </div>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search companies..."
-            className="pl-10 w-[250px]"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        <div className="flex gap-2 items-center">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search companies..."
+              className="pl-10 w-[250px]"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+          </div>
+          {isFetching && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
       </div>
 
@@ -112,7 +173,7 @@ export default function AdminCompaniesPage() {
               title="No companies found"
               description={searchQuery ? "No companies match your search criteria." : "There are no companies registered on the platform yet."}
               actionLabel={searchQuery ? "Clear Search" : undefined}
-              onAction={searchQuery ? () => setSearchQuery("") : undefined}
+              onAction={searchQuery ? () => { setSearchInput(""); setSearchQuery(""); } : undefined}
             />
           </CardContent>
         </Card>

@@ -29,7 +29,7 @@ export default function RecruiterDashboardPage() {
           <p className="text-muted-foreground">Manage your jobs and applications</p>
         </div>
         <Button asChild className="w-full sm:w-auto">
-          <Link href="/dashboard/recruiter/jobs/new">Post New Job</Link>
+          <Link href="/dashboard/recruiter/jobs/create">Post New Job</Link>
         </Button>
       </div>
 

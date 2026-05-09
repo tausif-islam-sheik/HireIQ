@@ -23,7 +23,7 @@ export default function AdminAnalyticsPage() {
   const { data: analytics, isLoading } = useQuery({
     queryKey: ["admin-analytics"],
     queryFn: async () => {
-      const response = await api.get("/admin/analytics");
+      const response = await api.get("/users/dashboard-stats");
       return response.data.data as AnalyticsData;
     },
   });
@@ -31,10 +31,66 @@ export default function AdminAnalyticsPage() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-64" />
+        </div>
         <div className="grid lg:grid-cols-2 gap-6">
-          <Skeleton className="h-80" />
-          <Skeleton className="h-80" />
+          <Card>
+            <div className="p-6">
+              <Skeleton className="h-6 w-40" />
+              <Skeleton className="h-4 w-32 mt-1" />
+            </div>
+            <div className="p-6 pt-0">
+              <Skeleton className="h-64 w-full" />
+            </div>
+          </Card>
+          <Card>
+            <div className="p-6">
+              <Skeleton className="h-6 w-40" />
+              <Skeleton className="h-4 w-32 mt-1" />
+            </div>
+            <div className="p-6 pt-0">
+              <Skeleton className="h-64 w-full" />
+            </div>
+          </Card>
+        </div>
+        <div className="grid lg:grid-cols-2 gap-6">
+          <Card>
+            <div className="p-6">
+              <Skeleton className="h-6 w-40" />
+              <Skeleton className="h-4 w-32 mt-1" />
+            </div>
+            <div className="p-6 pt-0">
+              <Skeleton className="h-64 w-full" />
+            </div>
+          </Card>
+          <Card>
+            <div className="p-6">
+              <Skeleton className="h-6 w-40" />
+              <Skeleton className="h-4 w-32 mt-1" />
+            </div>
+            <div className="p-6 pt-0">
+              <Skeleton className="h-64 w-full" />
+            </div>
+          </Card>
+        </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => (
+            <Card key={i}>
+              <div className="p-6">
+                <Skeleton className="h-5 w-28" />
+              </div>
+              <div className="p-6 pt-0 space-y-4">
+                {[...Array(3)].map((_, j) => (
+                  <div key={j} className="flex justify-between">
+                    <Skeleton className="h-4 w-28" />
+                    <Skeleton className="h-4 w-12" />
+                  </div>
+                ))}
+              </div>
+            </Card>
+          ))}
         </div>
       </div>
     );
