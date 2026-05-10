@@ -6,6 +6,11 @@ export const metadata: Metadata = {
   title: "HireIQ - AI-Powered Smart Recruitment Platform",
   description: "Find your dream job or hire the best talent with AI-powered matching. Resume analysis, job description generation, candidate ranking, and interview coaching.",
   keywords: "jobs, recruitment, hiring, AI, resume, career, employment",
+  icons: {
+    icon: "/icon",
+    shortcut: "/icon",
+    apple: "/icon",
+  },
 };
 
 export default function RootLayout({
