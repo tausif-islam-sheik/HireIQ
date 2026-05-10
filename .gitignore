@@ -62,3 +62,5 @@ logs
 # temporary files
 *.tmp
 *.temp
+
+.vercel
