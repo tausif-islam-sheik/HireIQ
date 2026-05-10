@@ -35,7 +35,7 @@ export default function RegisterPage() {
       formData.role
     );
 
-    if (result.success) {
+    if (result?.success) {
       router.push("/");
     }
 

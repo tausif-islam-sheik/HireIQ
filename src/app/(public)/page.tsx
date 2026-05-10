@@ -248,15 +248,26 @@ export default function HomePage() {
   });
 
   // Map API job data to card format
-  const featuredJobs = jobsData?.map((job: any) => ({
+  const featuredJobs: {
+    id: string;
+    title: string;
+    company: string;
+    location: string;
+    salary: string;
+    type: string;
+    typeColor: string;
+    postedDate: string;
+    tags: string[];
+    logo: string;
+  }[] = jobsData?.map((job: { id: string; title: string; company?: { name?: string }; location?: string; salary?: string; type?: string; skills?: string[]; createdAt?: string }) => ({
     id: job.id,
     title: job.title,
     company: job.company?.name || "Unknown Company",
     location: job.location || "Remote",
     salary: job.salary || "Competitive",
     type: job.type || "FULL TIME",
-    typeColor: getTypeColor(job.type),
-    postedDate: getTimeAgo(job.createdAt),
+    typeColor: getTypeColor(job.type || "FULL TIME"),
+    postedDate: getTimeAgo(job.createdAt || new Date().toISOString()),
     tags: job.skills?.slice(0, 3) || ["General"],
     logo: getCompanyGradient(job.company?.name || ""),
   })) || [];

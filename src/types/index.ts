@@ -6,6 +6,7 @@ export interface User {
   email: string;
   role: UserRole;
   avatar: string | null;
+  profilePicture?: string | null;
   isVerified: boolean;
   createdAt?: string;
   company?: {
@@ -50,6 +51,7 @@ export interface Job {
   _count?: {
     applications: number;
   };
+  deadline?: string;
   createdAt: string;
   updatedAt?: string;
 }
