@@ -268,3 +268,8 @@ pnpm start
 ---
 
 **Built with AI 🤖 and using Next.js, TypeScript, and modern web technologies.**
+
+## Screenshot
+
+<img width="1920" height="8146" alt="HireIQ-AI-Powered-Smart-Recruitment-Platform-05-10-2026_06_23_PM" src="https://github.com/user-attachments/assets/4c6c702c-ab54-4e89-9dbc-6b498a1c70ef" />
+
