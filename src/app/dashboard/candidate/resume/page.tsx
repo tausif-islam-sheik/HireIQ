@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ResumeAnalyzer } from "@/components/ai/ResumeAnalyzer";
 import { Resume } from "@/types";
-import { Upload, FileText, AlertCircle, CheckCircle2, Loader2, Sparkles, Download } from "lucide-react";
+import { Upload, FileText, AlertCircle, CheckCircle2, Loader2, Sparkles, Download, Wand2 } from "lucide-react";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { toast } from "sonner";
 
@@ -19,6 +19,7 @@ export default function CandidateResumePage() {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const { data: resume, isLoading } = useQuery({
     queryKey: ["my-resume"],
@@ -47,6 +48,28 @@ export default function CandidateResumePage() {
       const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || "Failed to upload resume";
       toast.error(errorMessage);
       setIsUploading(false);
+    },
+  });
+
+  const analyzeMutation = useMutation({
+    mutationFn: async () => {
+      const resumeText = resume?.parsedData?.text || resume?.parsedData?.content || JSON.stringify(resume?.parsedData);
+      const response = await api.post("/ai/analyze-resume", {
+        resumeText: resumeText || "Resume content not available",
+        jobDescription: "",
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      toast.success("AI analysis completed!");
+      queryClient.invalidateQueries({ queryKey: ["my-resume"] });
+      setIsAnalyzing(false);
+    },
+    onError: (error: any) => {
+      console.error("AI analysis error:", error);
+      const errorMessage = error.response?.data?.message || "Failed to analyze resume";
+      toast.error(errorMessage);
+      setIsAnalyzing(false);
     },
   });
 
@@ -90,6 +113,21 @@ export default function CandidateResumePage() {
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleAnalyzeClick = async () => {
+    if (!resume?.parsedData) {
+      toast.error("Resume parsing required. Please re-upload your resume.");
+      return;
+    }
+    try {
+      setIsAnalyzing(true);
+      await analyzeMutation.mutateAsync();
+    } catch (err) {
+      console.error("Analysis failed:", err);
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   if (isLoading) {
@@ -213,6 +251,33 @@ export default function CandidateResumePage() {
           <CardContent>
             {resume?.aiAnalysis ? (
               <ResumeAnalyzer analysis={resume.aiAnalysis} />
+            ) : resume ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-950 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Wand2 className="w-8 h-8 text-indigo-600" />
+                </div>
+                <h3 className="font-semibold text-lg mb-2">Ready for AI Analysis</h3>
+                <p className="text-muted-foreground text-sm mb-4 max-w-[250px] mx-auto">
+                  Get AI-powered insights about your resume strengths and improvement areas
+                </p>
+                <Button
+                  onClick={handleAnalyzeClick}
+                  disabled={isAnalyzing}
+                  className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700"
+                >
+                  {isAnalyzing ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      Analyze Resume
+                    </>
+                  )}
+                </Button>
+              </div>
             ) : (
               <EmptyState
                 icon={Sparkles}

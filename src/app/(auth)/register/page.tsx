@@ -44,31 +44,21 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
-      <div className="w-full max-w-md space-y-8">
-        {/* Logo */}
-        <div className="flex flex-col items-center space-y-2">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">
-              <Briefcase className="w-7 h-7 text-white" />
-            </div>
-            <span className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
-              HireIQ
-            </span>
-          </Link>
-          <p className="text-muted-foreground text-center text-sm">
-            Create your account and get started
-          </p>
-        </div>
-
+      <div className="w-full max-w-md">
         {/* Registration Form */}
-        <Card className="border-0 shadow-2xl shadow-slate-200/50 dark:shadow-slate-950/50">
-          <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
-            <CardDescription className="text-center">
-              Choose your role and fill in your details
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-5">
+        <Card className="border-0 shadow-2xl shadow-slate-200/50 dark:shadow-slate-950/50 overflow-hidden">
+          {/* Unified Header with Logo */}
+          <div className="p-6 sm:p-8 text-center border-b border-slate-100 dark:border-slate-800">
+            <Link href="/" className="inline-flex items-center gap-3 group mb-3">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">
+                <Briefcase className="w-6 h-6 text-white" />
+              </div>
+            </Link>
+            <h1 className="text-xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-2">Create Account</h1>
+            <p className="text-slate-500 dark:text-slate-400 text-sm max-w-[280px] mx-auto leading-relaxed">Join thousands of professionals on HireIQ</p>
+          </div>
+
+          <CardContent className="space-y-5 pt-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Role Selection */}
               <div className="space-y-2">
@@ -199,7 +189,7 @@ export default function RegisterPage() {
             </form>
 
           </CardContent>
-          <CardFooter className="flex justify-center pb-6">
+          <CardFooter className="flex justify-center pb-6 pt-2 bg-slate-50/50 dark:bg-slate-950/50 border-t">
             <p className="text-sm text-muted-foreground">
               Already have an account?{" "}
               <Link
