@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ResumeAnalyzer } from "@/components/ai/ResumeAnalyzer";
 import { Resume } from "@/types";
-import { Upload, FileText, AlertCircle, CheckCircle2, Loader2, Sparkles, Download, Wand2 } from "lucide-react";
+import { Upload, FileText, AlertCircle, CheckCircle2, Loader2, Sparkles, Download, Wand2, RotateCcw } from "lucide-react";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { toast } from "sonner";
 
@@ -60,9 +60,18 @@ export default function CandidateResumePage() {
       });
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success("AI analysis completed!");
-      queryClient.invalidateQueries({ queryKey: ["my-resume"] });
+      // Update cache immediately with new analysis data
+      queryClient.setQueryData(["my-resume"], (oldData: Resume | null) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          aiAnalysis: data.data,
+        };
+      });
+      // Also invalidate to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: ["my-resume"], refetchType: 'active' });
       setIsAnalyzing(false);
     },
     onError: (error: any) => {
@@ -70,6 +79,30 @@ export default function CandidateResumePage() {
       const errorMessage = error.response?.data?.message || "Failed to analyze resume";
       toast.error(errorMessage);
       setIsAnalyzing(false);
+    },
+  });
+
+  const resetMutation = useMutation({
+    mutationFn: async () => {
+      const response = await api.patch("/resumes/my", {
+        aiAnalysis: null,
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      toast.success("Analysis reset successfully!");
+      queryClient.setQueryData(["my-resume"], (oldData: Resume | null) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          aiAnalysis: null,
+        };
+      });
+      queryClient.invalidateQueries({ queryKey: ["my-resume"] });
+    },
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.message || "Failed to reset analysis";
+      toast.error(errorMessage);
     },
   });
 
@@ -128,6 +161,10 @@ export default function CandidateResumePage() {
     } finally {
       setIsAnalyzing(false);
     }
+  };
+
+  const handleResetClick = async () => {
+    await resetMutation.mutateAsync();
   };
 
   if (isLoading) {
@@ -239,14 +276,33 @@ export default function CandidateResumePage() {
 
         {/* AI Analysis Section */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-indigo-600" />
-              AI Resume Analysis
-            </CardTitle>
-            <CardDescription>
-              Get insights about your resume strengths and areas for improvement
-            </CardDescription>
+          <CardHeader className="flex flex-row items-start justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-indigo-600" />
+                AI Resume Analysis
+              </CardTitle>
+              <CardDescription>
+                Get insights about your resume strengths and areas for improvement
+              </CardDescription>
+            </div>
+            {resume?.aiAnalysis && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleResetClick}
+                disabled={resetMutation.isPending}
+              >
+                {resetMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <RotateCcw className="h-4 w-4 mr-1" />
+                    Reset
+                  </>
+                )}
+              </Button>
+            )}
           </CardHeader>
           <CardContent>
             {resume?.aiAnalysis ? (
