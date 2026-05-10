@@ -1,8 +1,20 @@
-# HireIQ - AI-Powered Recruitment Platform
+# 🤖 HireIQ
+
+An AI-powered recruitment platform that automates resume screening, ranks candidates by job fit, and provides interview coaching
+
+[![Next.js](https://img.shields.io/badge/NEXT.JS@16-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TYPESCRIPT@5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
+[![React](https://img.shields.io/badge/REACT@19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
+[![TanStack Query](https://img.shields.io/badge/TANSTACK%20QUERY-FF4154?style=for-the-badge&logo=reactquery&logoColor=white)](https://tanstack.com/query)
+[![Zustand](https://img.shields.io/badge/ZUSTAND-FF6B6B?style=for-the-badge&logo=react&logoColor=white)](https://zustand-demo.pmnd.rs)
+[![Axios](https://img.shields.io/badge/AXIOS-5A29E4?style=for-the-badge&logo=axios&logoColor=white)](https://axios-http.com)
+[![shadcn/ui](https://img.shields.io/badge/SHADCN%2FUI-000000?style=for-the-badge&logo=shadcnui&logoColor=white)](https://ui.shadcn.com)
+
+[Live Demo](https://hireiq.vercel.app) · [Backend Repository](https://github.com/tausif-islam-sheik/HireIQ-Server) — Express.js REST API
 
 ## Project Overview
 
-HireIQ is a next-generation AI-powered recruitment platform that revolutionizes how companies hire and candidates find jobs. By leveraging artificial intelligence, HireIQ automates resume screening, ranks candidates by job fit, provides interview coaching, and delivers personalized job recommendations — dramatically reducing time-to-hire and improving match quality.
+HireIQ revolutionizes hiring by leveraging AI to automate resume screening, rank candidates by job fit, provide interview coaching, and deliver personalized job recommendations — dramatically reducing time-to-hire.
 
 ### Who It's For
 
@@ -231,7 +243,6 @@ cp .env.example .env.local
 
 # Edit .env.local with your values:
 NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
-NEXT_PUBLIC_OPENAI_API_KEY=your_openai_key
 ```
 
 ### Run Locally
@@ -252,4 +263,4 @@ pnpm start
 
 ---
 
-**Built with AI 🤖 and ❤️ using Next.js, TypeScript, and modern web technologies.**
+**Built with AI 🤖 and using Next.js, TypeScript, and modern web technologies.**
