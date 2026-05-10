@@ -1,3 +1,5 @@
+<div align="center">
+
 # 🤖 HireIQ
 
 An AI-powered recruitment platform that automates resume screening, ranks candidates by job fit, and provides interview coaching
@@ -11,6 +13,8 @@ An AI-powered recruitment platform that automates resume screening, ranks candid
 [![shadcn/ui](https://img.shields.io/badge/SHADCN%2FUI-000000?style=for-the-badge&logo=shadcnui&logoColor=white)](https://ui.shadcn.com)
 
 [Live Demo](https://hireiq.vercel.app) · [Backend Repository](https://github.com/tausif-islam-sheik/HireIQ-Server) — Express.js REST API
+
+</div>
 
 ## Project Overview
 
