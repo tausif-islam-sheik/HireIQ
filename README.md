@@ -12,7 +12,7 @@ An AI-powered recruitment platform that automates resume screening, ranks candid
 [![Axios](https://img.shields.io/badge/AXIOS-5A29E4?style=for-the-badge&logo=axios&logoColor=white)](https://axios-http.com)
 [![shadcn/ui](https://img.shields.io/badge/SHADCN%2FUI-000000?style=for-the-badge&logo=shadcnui&logoColor=white)](https://ui.shadcn.com)
 
-[Live Demo](https://hireiq.vercel.app) · [Backend Repository](https://github.com/tausif-islam-sheik/HireIQ-Server) — Express.js REST API
+[Live Demo](https://hireiq-bay.vercel.app) · [Backend Repository](https://github.com/tausif-islam-sheik/HireIQ-Server) — Express.js REST API
 
 </div>
 
