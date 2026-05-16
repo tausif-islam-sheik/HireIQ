@@ -1,8 +1,8 @@
 <div align="center">
 
-# 🤖 HireIQ
+# 🤖 HireIQ: Smart AI Recruitment Platform
 
-An AI-powered recruitment platform that automates resume screening, ranks candidates by job fit, and provides interview coaching
+**Revolutionizing the future of hiring with intelligent automation and data-driven insights.**
 
 [![Next.js](https://img.shields.io/badge/NEXT.JS@16-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TYPESCRIPT@5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
@@ -10,286 +10,118 @@ An AI-powered recruitment platform that automates resume screening, ranks candid
 [![TanStack Query](https://img.shields.io/badge/TANSTACK%20QUERY-FF4154?style=for-the-badge&logo=reactquery&logoColor=white)](https://tanstack.com/query)
 [![Zustand](https://img.shields.io/badge/ZUSTAND-FF6B6B?style=for-the-badge&logo=react&logoColor=white)](https://zustand-demo.pmnd.rs)
 [![Axios](https://img.shields.io/badge/AXIOS-5A29E4?style=for-the-badge&logo=axios&logoColor=white)](https://axios-http.com)
+[![GSAP](https://img.shields.io/badge/GSAP-Animations-88CE02?style=for-the-badge&logo=greensock&logoColor=white)](https://greensock.com)
 [![shadcn/ui](https://img.shields.io/badge/SHADCN%2FUI-000000?style=for-the-badge&logo=shadcnui&logoColor=white)](https://ui.shadcn.com)
 
 [Live Demo](https://hireiq-bay.vercel.app) · [Backend Repository](https://github.com/tausif-islam-sheik/HireIQ-Server) — Express.js REST API
 
 </div>
 
-## Project Overview
+---
 
-HireIQ revolutionizes hiring by leveraging AI to automate resume screening, rank candidates by job fit, provide interview coaching, and deliver personalized job recommendations — dramatically reducing time-to-hire.
+## ✨ Project Vision
 
-### Who It's For
+HireIQ is a next-generation recruitment ecosystem designed to eliminate the friction in modern hiring. By combining **Advanced AI (Claude/Llama)** with a **High-Performance UI**, we empower recruiters to find the perfect match in seconds while providing candidates with intelligent coaching to accelerate their careers.
 
-- **Companies/Recruiters**: Post jobs, review AI-ranked candidates, and make data-driven hiring decisions
-- **Candidates/Job Seekers**: Apply for jobs, receive AI-driven interview coaching, and get personalized job recommendations
+### 🌟 Core Value Propositions
 
-### Role-Based Feature Matrix
+- **For Recruiters**: Automated resume screening, AI-ranked candidate lists, and comprehensive hiring analytics.
+- **For Candidates**: Real-time resume quality analysis, AI-driven interview simulation, and hyper-personalized job matching.
 
-| Feature | Company | Candidate | AI-Powered |
-|---------|:-------:|:---------:|:----------:|
-| Post & Manage Jobs | ✅ | ❌ | ❌ |
-| Review AI-Ranked Candidates | ✅ | ❌ | ✅ |
-| Track Applications | ✅ | ✅ | ❌ |
-| Upload Resume | ❌ | ✅ | ❌ |
-| AI Resume Analysis | ❌ | ✅ | ✅ |
-| AI Resume Screening | ✅ | ❌ | ✅ |
-| AI Interview Coaching | ❌ | ✅ | ✅ |
-| AI Job Recommendations | ❌ | ✅ | ✅ |
-| Analytics Dashboard | ✅ | ❌ | ✅ |
-| Real-time Notifications | ✅ | ✅ | ❌ |
+---
 
-## Technology Stack
+## 🧠 Intelligence Engine (AI Features)
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| Next.js | 15.x | React framework with App Router, SSR/SSG |
-| React | 19.x | UI library with concurrent features |
-| TypeScript | 5.x | Type-safe JavaScript |
-| Tailwind CSS | 3.x | Utility-first CSS framework |
-| shadcn/ui | latest | Accessible UI component library |
-| TanStack Query | 5.x | Server state management & caching |
-| Zustand | 4.x | Client state management |
-| Axios | 1.x | HTTP client with interceptors |
-| Recharts | 2.x | Data visualization |
-| Zod | 3.x | Schema validation |
-| React Hook Form | 7.x | Form state management |
-| Lucide React | latest | Modern icon library |
+### 1. **Smart Resume Analysis** 📄
 
-## New & Noteworthy Technologies
+Candidates receive an instant, multi-dimensional audit of their professional profile.
 
-### TanStack Query (React Query)
-**Why chosen**: Eliminates boilerplate for data fetching, provides intelligent caching, background refetching, and optimistic updates. Perfect for the real-time nature of recruitment dashboards.
+- **Match Scoring**: Real-time percentage matching against specific job requirements.
+- **Gap Identification**: AI pinpoints missing critical skills or experience.
+- **Actionable Tips**: LLM-generated suggestions to improve resume visibility for ATS.
 
-### shadcn/ui + Radix UI
-**Why chosen**: Combines the flexibility of headless UI primitives with beautiful pre-built components. Fully accessible out-of-the-box, critical for inclusive hiring platforms.
+### 2. **AI Candidate Screening & Ranking** 🏆
 
-### Zustand
-**Why chosen**: Lightweight alternative to Redux with minimal boilerplate. Perfect for managing auth state and UI preferences without complexity.
+Recruiters no longer need to manually filter through hundreds of applicants.
 
-### Next.js App Router
-**Why chosen**: Enables server components for better performance, parallel routes for dashboard layouts, and nested layouts for role-based views.
+- **Automated Evaluation**: AI parses PDF/Word files and scores them based on job description context.
+- **Ranked Pipelines**: Candidates are automatically sorted by "Job Fit," highlighting the "Top 3" instantly.
 
-## AI Features
+### 3. **AI Interview Coaching** 🎤
 
-### 1. AI Resume Analysis 🤖
-**How it works**: Candidates upload their resume and click "Analyze Resume" to get instant AI feedback:
-- **Overall Score**: 0-100 rating of resume quality
-- **Job Match**: Match percentage against job requirements
-- **Strengths**: What the resume does well
-- **Gaps**: Missing skills and experience
-- **Suggestions**: Specific improvements with actionable tips
-- **Verdict**: Strong Match / Moderate Match / Weak Match
+Immersive practice environment for candidates.
 
-**Tech Stack**: OpenRouter API + Meta Llama 3.1
+- **Dynamic Questioning**: Generates role-specific behavioral and technical questions.
+- **Instant Feedback**: Scores responses on clarity, confidence, and technical accuracy.
 
-**Reset Feature**: After analysis, click "Reset" to clear and re-analyze
+### 4. **Predictive Job Recommendations** 🎯
 
-**UI Location**: Candidate Dashboard → Resume & AI Analysis → Analyze Resume Button
+A hybrid matching algorithm that suggests jobs based on skills, preferences, and platform-wide hiring trends.
 
-### 2. AI Resume Screening 🤖
-**How it works**: When a candidate uploads their resume, our AI engine:
-- Extracts skills, experience, and education using NLP
-- Compares against job description requirements
-- Generates a match score (0-100%)
-- Provides detailed feedback: "Strong match in React and Node.js, missing Kubernetes experience"
+---
 
-**Input**: Resume PDF + Job ID
-**Output**: Match score + Skill gap analysis + Recommendation
+## 🛠️ Technology Ecosystem
 
-**UI Location**: Recruiter dashboard → Job Applications → AI Score column
+### Frontend Architecture
 
-### 3. Candidate Ranking & Matching 🏆
-**How it works**: AI automatically ranks all applicants for each job post:
-- Analyzes resume + application answers
-- Scores cultural fit, technical skills, experience level
-- Sorts candidates by overall fit percentage
-- Highlights top 3 "Best Matches" with badges
+- **Framework**: Next.js 15 (App Router, Server Actions)
+- **Styling**: Tailwind CSS & Vanilla CSS for premium micro-animations.
+- **Components**: shadcn/ui & Radix UI (accessible, high-quality primitives).
+- **State Management**: Zustand (Client) & TanStack Query (Server State).
+- **Animations**: GSAP (Entrance/Scroll effects) & Lenis (Smooth Scrolling).
 
-**Input**: All applications for a job
-**Output**: Ranked list with fit percentages and reasoning
+### Backend Powerhouse
 
-**UI Location**: Recruiter → Applicants tab → Sorted by AI Rank
+- **Engine**: Express.js & Node.js 20+
+- **ORM**: Prisma with PostgreSQL.
+- **AI Integration**: OpenRouter (Llama 3.1) & Anthropic (Claude API).
+- **Real-time**: Socket.io for live AI processing notifications.
 
-### 4. AI Interview Coaching 🎤
-**How it works**: Candidates can practice interviews with AI:
-- AI generates role-specific questions based on job description
-- Candidate responds via text or voice
-- AI evaluates answer for content, clarity, and confidence
-- Provides improvement tips: "Add specific metrics to strengthen your answer"
+---
 
-**Input**: Job role + Candidate answer
-**Output**: Score + Strengths + Areas for improvement + Sample better answer
-
-**UI Location**: Candidate → Interview Prep → Start AI Coaching
-
-### 5. Personalized Job Recommendations 🎯
-**How it works**: AI analyzes candidate profile and suggests best-fit jobs:
-- Matches skills against all open positions
-- Considers location preferences and salary expectations
-- Learns from application history
-- Updates recommendations weekly
-
-**Input**: Candidate profile + Job database
-**Output**: Top 10 recommended jobs with match reasons
-
-**UI Location**: Candidate Dashboard → "Recommended For You" section
-
-## Problems Faced & Solutions
-
-### 1. Resume Upload & Text Extraction (NEW)
-**Problem**: PDF and Word resume uploads didn't extract text for AI analysis, causing "No JSON found" errors.
-
-**Solution**:
-- Integrated pdf-parse for PDF text extraction
-- Integrated mammoth for Word document parsing
-- Extract text BEFORE Cloudinary upload to prevent file deletion issues
-- Store extracted text in parsedData JSON field
-- Achieved 100% text extraction success rate
-
-### 2. AI Scoring Delay on Large Applicant Lists
-**Problem**: AI resume screening took 3-5 seconds per candidate. With 200+ applicants, recruiters faced long loading times.
-
-**Solution**: 
-- Implemented background AI processing queue
-- Show instant "Processing..." badge while AI scores in background
-- Cache AI scores in database for instant retrieval on subsequent views
-- Added WebSocket to notify recruiters when scoring completes
-
-### 3. Resume Parsing Accuracy
-**Problem**: AI struggled with varied resume formats (PDF layouts, tables, images). Only 70% accuracy initially.
-
-**Solution**:
-- Integrated multiple NLP parsers (PDFplumber + Azure Form Recognizer)
-- Built fallback extraction pipeline
-- Added manual correction UI for candidates
-- Achieved 95% accuracy with ensemble approach
-
-### 4. Real-time AI Updates Without Page Refresh
-**Problem**: Recruiters had to refresh page to see new AI scores as candidates applied.
-
-**Solution**:
-- Implemented TanStack Query with 30-second polling
-- Added `isFetching` spinner next to search inputs
-- Used React Query `placeholderData` to prevent UI flicker
-- Skeleton loaders show only on initial load
-
-### 5. AI Interview Coaching Response Time
-**Problem**: GPT API calls for interview coaching took 4-8 seconds, poor UX.
-
-**Solution**:
-- Implemented streaming responses for real-time typing effect
-- Added client-side caching for similar questions
-- Pre-generated common question answers in background
-- Show partial response while AI completes
-
-### 6. Balancing AI Automation with Human Control
-**Problem**: Recruiters worried about AI bias and wanted manual override.
-
-**Solution**:
-- Made AI scores "advisory only" — recruiters can override rankings
-- Added explainability: AI shows why it ranked each candidate
-- Implemented bias detection alerts if AI scores show demographic patterns
-- Human-in-the-loop design with clear AI vs human decision boundaries
-
-### 7. Matching Algorithm Cold Start
-**Problem**: New candidates with no history got poor job recommendations.
-
-**Solution**:
-- Built onboarding wizard to collect skills/preferences explicitly
-- Used content-based filtering for new users (skill matching)
-- Hybrid approach: content-based for new users, collaborative for active users
-- "Quick Apply" feature boosts engagement to gather interaction data faster
-
-## Project Folder Structure
-
-```
-hireiq/
-├── src/
-│   ├── app/
-│   │   ├── (auth)/
-│   │   │   ├── login/
-│   │   │   └── register/
-│   │   ├── dashboard/
-│   │   │   ├── admin/
-│   │   │   │   ├── analytics/
-│   │   │   │   ├── companies/
-│   │   │   │   ├── jobs/
-│   │   │   │   ├── profile/
-│   │   │   │   └── users/
-│   │   │   ├── candidate/
-│   │   │   │   ├── applications/
-│   │   │   │   ├── interview-prep/     # AI coaching
-│   │   │   │   ├── jobs/
-│   │   │   │   ├── profile/
-│   │   │   │   └── recommendations/    # AI job suggestions
-│   │   │   ├── recruiter/
-│   │   │   │   ├── applicants/
-│   │   │   │   ├── jobs/
-│   │   │   │   ├── profile/
-│   │   │   │   └── screening/          # AI resume screening
-│   │   │   └── layout.tsx
-│   │   ├── api/                        # API routes (AI processing)
-│   │   ├── jobs/
-│   │   └── page.tsx
-│   ├── components/
-│   │   ├── ai/
-│   │   │   ├── AIScoreBadge.tsx
-│   │   │   ├── InterviewChat.tsx
-│   │   │   ├── JobRecommendationCard.tsx
-│   │   │   ├── ResumeUpload.tsx
-│   │   │   └── SkillMatchBar.tsx
-│   │   ├── dashboard/
-│   │   ├── jobs/
-│   │   ├── ui/
-│   │   └── layout/
-│   ├── hooks/
-│   ├── lib/
-│   ├── store/
-│   └── types/
-├── public/
-└── .env.example
-```
-
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js 18+
-- Backend server running (see hireiq-server README)
-- OpenAI API key (for AI features)
+- pnpm (Recommended)
+- HireIQ Backend Server running
 
 ### Installation
 
 ```bash
-# Clone repository
+# Clone the repository
 git clone https://github.com/tausif-islam-sheik/HireIQ.git
 cd HireIQ/hireiq
 
 # Install dependencies
 pnpm install
 
-# Setup environment variables
+# Environment setup
 cp .env.example .env.local
-
-# Edit .env.local with your values:
-NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
 ```
 
-### Run Locally
+### Development
 
 ```bash
-# Development server
 pnpm dev
-
-# Open http://localhost:3000
+# The platform will be live at http://localhost:3000
 ```
 
-### Build for Production
+---
+
+## 📂 Architecture Overview
 
 ```bash
-pnpm build
-pnpm start
+src/
+├── app/             # Next.js 15 App Router & Layouts
+│   ├── (public)/    # Marketing & Blog pages
+│   ├── dashboard/   # Specialized role-based dashboards
+│   └── providers/   # GSAP, Lenis, and Query providers
+├── components/      # Atomic UI components & AI widgets
+├── hooks/           # Custom React hooks (useGSAP, useAuth)
+├── lib/             # Utility functions & Blog data
+└── store/           # Zustand state management
 ```
 
 ---
@@ -299,4 +131,3 @@ pnpm start
 ## Screenshot
 
 <img width="1920" height="8146" alt="HireIQ-AI-Powered-Smart-Recruitment-Platform-05-10-2026_06_23_PM" src="https://github.com/user-attachments/assets/4c6c702c-ab54-4e89-9dbc-6b498a1c70ef" />
-
