@@ -37,7 +37,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ id: string 
       }, containerRef);
       return () => ctx.revert();
     }
-  }, [params.id]);
+  }, [resolvedParams.id]);
 
   return (
     <div ref={containerRef} className="min-h-screen py-12 bg-background">
