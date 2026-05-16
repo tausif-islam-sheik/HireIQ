@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
@@ -224,6 +226,40 @@ function getCompanyGradient(name: string) {
 export default function HomePage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    
+    if (containerRef.current) {
+      const ctx = gsap.context(() => {
+        // Hero elements animation
+        gsap.from(".hero-anim", {
+          y: 30,
+          opacity: 0,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: "power3.out"
+        });
+
+        // Scroll animations for sections
+        gsap.utils.toArray(".section-anim").forEach((section: any) => {
+          gsap.from(section, {
+            scrollTrigger: {
+              trigger: section,
+              start: "top 85%",
+            },
+            y: 40,
+            opacity: 0,
+            duration: 0.8,
+            ease: "power3.out"
+          });
+        });
+      }, containerRef);
+
+      return () => ctx.revert();
+    }
+  }, []);
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -273,7 +309,7 @@ export default function HomePage() {
   })) || [];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div ref={containerRef} className="min-h-screen bg-background">
 
       {/* Hero Section */}
       <section className="relative pt-20 pb-20 lg:pt-16 lg:pb-40 overflow-hidden">
@@ -295,25 +331,25 @@ export default function HomePage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto space-y-8">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border mb-8">
+            <div className="hero-anim inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border mb-8">
               <Sparkles className="w-4 h-4 text-cyan-600 dark:text-cyan-500" />
               <span className="text-sm text-muted-foreground">AI-Powered Recruitment</span>
             </div>
 
             {/* Heading */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-foreground mb-6 leading-tight">
+            <h1 className="hero-anim text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-foreground mb-6 leading-tight">
               Find Your Dream Job with{" "}
               <span className="bg-gradient-to-r from-blue-600 via-violet-600 to-purple-600 dark:from-blue-400 dark:via-violet-400 dark:to-purple-400 bg-clip-text text-transparent">
                 AI Intelligence
               </span>
             </h1>
 
-            <p className="text-lg sm:text-xl text-muted-foreground mb-10 leading-relaxed max-w-2xl mx-auto">
+            <p className="hero-anim text-lg sm:text-xl text-muted-foreground mb-10 leading-relaxed max-w-2xl mx-auto">
               Smart resume analysis, AI-generated job descriptions, candidate ranking, and interview coaching. HireIQ connects talent with opportunity.
             </p>
 
             {/* Search Bar */}
-            <div className="max-w-2xl mx-auto mb-10 pt-10 px-4 sm:px-0">
+            <div className="hero-anim max-w-2xl mx-auto mb-10 pt-10 px-4 sm:px-0">
               <div className="flex items-center gap-2 p-2 bg-card rounded-full border border-border backdrop-blur-sm shadow-lg h-14 sm:h-16">
                 <div className="flex-1 flex items-center px-4 sm:px-6 min-w-0">
                   <Search className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground mr-3 sm:mr-4 flex-shrink-0" />
@@ -348,7 +384,7 @@ export default function HomePage() {
       </section>
 
       {/* Stats Bar */}
-      <section className="py-12 border-y border-border bg-muted/30 backdrop-blur-sm">
+      <section className="section-anim py-12 border-y border-border bg-muted/30 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat) => (
@@ -369,7 +405,7 @@ export default function HomePage() {
       </section>
 
       {/* Featured Jobs Section */}
-      <section className="py-20 lg:py-28">
+      <section className="section-anim py-20 lg:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-12">
             <div>
@@ -490,7 +526,7 @@ export default function HomePage() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-20 lg:py-28 bg-muted/30">
+      <section className="section-anim py-20 lg:py-28 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-foreground mb-3">How It Works</h2>
@@ -520,7 +556,7 @@ export default function HomePage() {
       </section>
 
       {/* AI Features Section */}
-      <section className="py-20 lg:py-28">
+      <section className="section-anim py-20 lg:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border mb-6">
@@ -551,7 +587,7 @@ export default function HomePage() {
       </section>
 
       {/* Popular Categories Section */}
-      <section className="py-20 lg:py-28 bg-muted/30">
+      <section className="section-anim py-20 lg:py-28 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-foreground mb-3">Popular Categories</h2>
@@ -580,7 +616,7 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 lg:py-28">
+      <section className="section-anim py-20 lg:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-foreground mb-3">What People Say</h2>
@@ -615,7 +651,7 @@ export default function HomePage() {
       </section>
 
       {/* FAQ Section - Premium Design */}
-      <section className="py-24 lg:py-32 relative overflow-hidden">
+      <section className="section-anim py-24 lg:py-32 relative overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/20 to-background" />
         <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[120px]" />
@@ -696,7 +732,7 @@ export default function HomePage() {
       </section>
 
       {/* Newsletter Section */}
-      <section className="py-20 lg:py-28">
+      <section className="section-anim py-20 lg:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 p-12 lg:p-16">
             {/* Background Effects */}
