@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import gsap from "gsap";
 import { useAuthStore } from "@/store/authStore";
 import { cn, getInitials } from "@/lib/utils";
 import {
@@ -99,9 +100,36 @@ export default function DashboardLayout({
   const { user, logout, isAuthenticated, isLoading } = useAuthStore();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const layoutRef = useRef<HTMLDivElement>(null);
 
   // Prevent hydration mismatch
   useState(() => setMounted(true));
+
+  // Layout animations
+  useEffect(() => {
+    if (!isLoading && isAuthenticated && layoutRef.current) {
+      const ctx = gsap.context(() => {
+        const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+        tl.fromTo(".sidebar-anim", 
+          { x: -50, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.5, clearProps: "all" }
+        )
+        .fromTo(".navbar-anim", 
+          { y: -20, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.5, clearProps: "all" },
+          "-=0.3"
+        )
+        .fromTo(".content-anim", 
+          { y: 20, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.5, clearProps: "all" },
+          "-=0.3"
+        );
+      }, layoutRef);
+
+      return () => ctx.revert();
+    }
+  }, [isLoading, isAuthenticated]);
 
   // Check authentication and RBAC
   useEffect(() => {
@@ -143,9 +171,9 @@ export default function DashboardLayout({
   const navItems = getNavItems(user?.role || "CANDIDATE");
 
   return (
-    <div className="min-h-screen bg-muted/50">
+    <div ref={layoutRef} className="min-h-screen bg-muted/50">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r bg-background hidden lg:block">
+      <aside className="sidebar-anim fixed left-0 top-0 z-40 h-screen w-64 border-r bg-background hidden lg:block">
         <div className="flex h-full flex-col">
           {/* Logo */}
           <div className="flex h-16 items-center border-b px-6">
@@ -228,7 +256,7 @@ export default function DashboardLayout({
       </aside>
 
       {/* Top Navbar */}
-      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 lg:ml-64">
+      <header className="navbar-anim sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 lg:ml-64">
         {/* Mobile Menu Button */}
         <Sheet>
           <SheetTrigger asChild>
@@ -353,7 +381,7 @@ export default function DashboardLayout({
       </header>
 
       {/* Main Content */}
-      <main className="lg:ml-64">
+      <main className="content-anim flex-1 p-4 lg:ml-64 lg:p-8">
         <div className="container mx-auto p-6">
           {children}
         </div>
