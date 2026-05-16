@@ -21,7 +21,7 @@
 
 ## ✨ Project Vision
 
-HireIQ is a next-generation recruitment ecosystem designed to eliminate the friction in modern hiring. By combining **Advanced AI (Claude/Llama)** with a **High-Performance UI**, we empower recruiters to find the perfect match in seconds while providing candidates with intelligent coaching to accelerate their careers.
+HireIQ is a next-generation recruitment ecosystem designed to eliminate the friction in modern hiring. By combining **Advanced AI (via OpenRouter)** with a **High-Performance UI**, we empower recruiters to find the perfect match in seconds while providing candidates with intelligent coaching to accelerate their careers.
 
 ### 🌟 Core Value Propositions
 
@@ -64,7 +64,7 @@ A hybrid matching algorithm that suggests jobs based on skills, preferences, and
 
 ### Frontend Architecture
 
-- **Framework**: Next.js 15 (App Router, Server Actions)
+- **Framework**: Next.js 16 (App Router, Server Actions)
 - **Styling**: Tailwind CSS & Vanilla CSS for premium micro-animations.
 - **Components**: shadcn/ui & Radix UI (accessible, high-quality primitives).
 - **State Management**: Zustand (Client) & TanStack Query (Server State).
@@ -74,7 +74,7 @@ A hybrid matching algorithm that suggests jobs based on skills, preferences, and
 
 - **Engine**: Express.js & Node.js 20+
 - **ORM**: Prisma with PostgreSQL.
-- **AI Integration**: OpenRouter (Llama 3.1) & Anthropic (Claude API).
+- **AI Integration**: OpenRouter API (Llama 3.1 / GPT-4o).
 - **Real-time**: Socket.io for live AI processing notifications.
 
 ---
@@ -110,18 +110,47 @@ pnpm dev
 
 ---
 
-## 📂 Architecture Overview
+## 📂 Full Project Structure
 
 ```bash
-src/
-├── app/             # Next.js 15 App Router & Layouts
-│   ├── (public)/    # Marketing & Blog pages
-│   ├── dashboard/   # Specialized role-based dashboards
-│   └── providers/   # GSAP, Lenis, and Query providers
-├── components/      # Atomic UI components & AI widgets
-├── hooks/           # Custom React hooks (useGSAP, useAuth)
-├── lib/             # Utility functions & Blog data
-└── store/           # Zustand state management
+hireiq/
+├── public/                 # Static assets (images, icons, fonts)
+├── src/
+│   ├── app/                # Next.js 16 App Router
+│   │   ├── (auth)/         # Auth routes (Login, Register, Forgot Password)
+│   │   ├── (public)/       # Marketing & Public-facing pages
+│   │   │   ├── about/      # Company information
+│   │   │   ├── blog/       # Blog listing & AI articles
+│   │   │   │   └── [id]/   # Dynamic blog detail pages
+│   │   │   ├── contact/    # Contact & Support page
+│   │   │   └── page.tsx    # Home landing page
+│   │   ├── dashboard/      # Secure user dashboards
+│   │   │   ├── admin/      # Platform administration & platform analytics
+│   │   │   ├── candidate/  # Job seeker tools, applications, & AI prep
+│   │   │   ├── recruiter/  # Job management & AI applicant screening
+│   │   │   └── layout.tsx  # Dashboard navigation & layout logic
+│   │   ├── api/            # Client-side API route handlers
+│   │   ├── globals.css     # Global CSS & Tailwind configuration
+│   │   ├── layout.tsx      # Root layout (Fonts, SEO, Lenis)
+│   │   └── providers.tsx   # QueryClient, Auth, & SmoothScroll providers
+│   ├── components/         # Reusable React components
+│   │   ├── ai/             # AI-specific components (Score badges, Chat)
+│   │   ├── dashboard/      # Dashboard widgets and navigation items
+│   │   ├── forms/          # Form components (Job posting, Profile update)
+│   │   ├── jobs/           # Job search, cards, and listing components
+│   │   ├── layout/         # Shared Header, Footer, and Navbar
+│   │   └── ui/             # shadcn/ui design system primitives
+│   ├── hooks/              # Custom React hooks (useAuth, useGSAP, useLenis)
+│   ├── lib/                # Utility functions, axios config, & blog data
+│   ├── store/              # Zustand state management (Auth, UI, Filter)
+│   ├── types/              # TypeScript interfaces and global types
+│   └── middleware.ts       # Route protection & redirection logic
+├── .env.local              # Local environment variables
+├── next.config.ts          # Next.js configuration settings
+├── package.json            # Project dependencies & scripts
+├── postcss.config.mjs      # PostCSS configuration
+├── tailwind.config.ts      # Tailwind CSS theme & plugin config
+└── tsconfig.json           # TypeScript compiler configuration
 ```
 
 ---
