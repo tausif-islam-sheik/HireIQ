@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { formatDistanceToNow } from "date-fns";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/axios";
 import { Button } from "@/components/ui/button";
@@ -222,9 +223,9 @@ export default function CandidateResumePage() {
                     <FileText className="h-6 w-6 text-indigo-600" />
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium">Resume uploaded</p>
+                    <p className="font-medium">{(resume.parsedData?.filename as string) || "Resume uploaded"}</p>
                     <p className="text-sm text-muted-foreground">
-                      Uploaded on {new Date(resume.createdAt).toLocaleDateString()}
+                      Uploaded {formatDistanceToNow(new Date(resume.updatedAt || resume.createdAt), { addSuffix: true })}
                     </p>
                   </div>
                   <Button variant="outline" size="sm" asChild>

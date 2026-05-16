@@ -77,6 +77,7 @@ export interface Resume {
   aiAnalysis: Record<string, unknown> | null;
   userId: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface Notification {
