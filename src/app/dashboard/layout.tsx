@@ -189,7 +189,7 @@ export default function DashboardLayout({
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="w-full justify-start gap-3 h-auto p-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user?.profilePicture || ""} />
+                    <AvatarImage src={user?.avatar || user?.profilePicture || ""} />
                     <AvatarFallback>{getInitials(user?.name || "U")}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 text-left">
@@ -276,6 +276,7 @@ export default function DashboardLayout({
               <div className="border-t p-4">
                 <Button variant="ghost" className="w-full justify-start gap-3 h-auto p-2" onClick={logout}>
                   <Avatar className="h-8 w-8">
+                    <AvatarImage src={user?.avatar || user?.profilePicture || ""} />
                     <AvatarFallback>{getInitials(user?.name || "U")}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 text-left">
@@ -318,7 +319,7 @@ export default function DashboardLayout({
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={user?.profilePicture || ""} />
+                  <AvatarImage src={user?.avatar || user?.profilePicture || ""} />
                   <AvatarFallback>{getInitials(user?.name || "U")}</AvatarFallback>
                 </Avatar>
               </Button>
